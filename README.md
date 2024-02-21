@@ -1,5 +1,6 @@
 # ShootEachOther
 A multiplayer First-person shooter game that utilizes GAS (Gameplay Ability System), replication system and ALS(Advance Locomotion System) in Unreal Engine.
+This project should only used for fun and learning purposes, not for commercial usage.
 
 # License
 Creative Commons Attribution-NonCommercial 4.0 International License
