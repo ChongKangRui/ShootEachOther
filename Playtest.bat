@@ -1,0 +1,1 @@
+"C:\UE_5.3\Engine\Binaries\Win64\UnrealEditor.exe" "C:\Users\SCSM11\Desktop\GameDev\Unreal Projects\ShootEachOther\ShootEachOther.uproject" -game -ResX=500 -ResY=500 -WINDOWED -WinX=0 - WinY=20 -log
