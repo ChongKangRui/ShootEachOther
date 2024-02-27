@@ -24,11 +24,13 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UWeaponInstance> WeaponInstance;
 
-	FWeaponSlot() {};
+	FWeaponSlot() : SlotType(EWeaponSlotType::None) {};
 	FWeaponSlot(EWeaponSlotType slot) : SlotType(slot) {}
 };
 
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponEquip, bool, EquipSuccess, UWeaponInstance*, ReplacementWeaponInstance);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTEACHOTHER_API UWeaponInventoryComponent : public UActorComponent
 {
@@ -68,7 +70,7 @@ public:
 
 	/*Do all the work that related to weapon and it's data, spawn the represent blueprint to the player mesh, assign data to the weapon*/
 	UFUNCTION(BlueprintCallable,Server, Reliable, Category = "Weapon Slot Component")
-	void SetCurrentWeaponSlot(const EWeaponSlotType WeaponSlot);
+	void SetCurrentWeaponSlot(const EWeaponSlotType WeaponSlot, bool UseBlueprintBindFunction = false);
 
 	/*Use this to get weapon ammo size/count etc, -1 mean it is invalid*/
 	UFUNCTION(BlueprintPure, Category = "Weapon Slot Component")
@@ -97,6 +99,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Weapon Slot Component")
 	const UWeaponInstance* FindWeaponBySlot(EWeaponSlotType type) const;
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnWeaponEquip OnWeaponEquip;
 
 protected:
 	/*
@@ -114,7 +119,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* WeaponDataTable;
 
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UPROPERTY(BlueprintReadWrite, Replicated)
 	TObjectPtr<AWeaponBase> AttachedWeapon;
 protected:
 	// Called when the game starts
@@ -124,6 +129,11 @@ protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	/*Responsible to swap the weapon instance reference when buying weapon or replace weapon instance*/
+	void SwapWeaponInstance(const EWeaponSlotType ReplacementWeaponSlot, UWeaponInstance* Replacement);
+	/*Helper function to change current weapon*/
+	void SwitchCurrentWeapon(UWeaponInstance* ReplacementInstance,UWeaponInstance* ToReplace, bool UseBlueprintBindFunction);
 	
 	UWeaponInstance* FindWeaponBySlot(const EWeaponSlotType type);
 

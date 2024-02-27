@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "WeaponFragmentBase.h"
 #include "Components/SlateWrapperTypes.h"
+#include "GameplayAbility/SEO_AbilitySet.h"
 #include "WeaponData.generated.h"
 
 class UAnimMontage;
@@ -14,18 +14,33 @@ class USoundBase;
 class USEO_GameplayAbility;
 class UUserWidget;
 class AWeaponBase;
-struct FAbilitySet_GameplayAbility;
+//struct FAbilitySet_GameplayAbility;
 
 UENUM(BlueprintType)
 enum class EWeaponType : uint8 {
-    Rifle,
-    Pistol,
-    Sniper,
-    Shotgun,
-    DefaultsKnife,
-    ExplosiveGrenade,
-    FlashLight,
-    MolotovCocktail
+    /*Rifle/Machinegun*/
+    Primary_Rifle_MP5,
+    Primary_Rifle_Tavor_TAR_21,
+    Primary_MachineGun_M249,
+    /*Sniper*/
+    Primary_Sniper_L42A1,
+    Primary_Anti_Mat_Rifle,
+    Primary_Slant_Rifle,
+    /*Shotgun*/
+    Primary_Silver_Sam,
+    /*Pistol*/
+    Secondary_Pistol,
+    /*Resolver*/
+    Secondary_Revolver,
+    Secondary_Single_Action_Army_Revolver,
+    Secondary_Fancy_Revolver,
+    Secondary_Cavalry_Revolver,
+    /*Melee*/
+    Melee_DefaultsKnife,
+    /*Grenade*/
+    Grenade_ExplosiveGrenade,
+    Grenade_FlashLight,
+    Grenade_MolotovCocktail
 };
 
 UENUM(BlueprintType)
@@ -97,6 +112,9 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
     bool CanAutoShoot = false;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    float ShopPrice = 1000.0f;
+
     /*When aiming with right mmouse button*/
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Trace Type")
     ETraceSourceType AimingTraceType = ETraceSourceType::ShootFromWeaponFiringPointToward;
@@ -111,6 +129,12 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Binding", Meta = (ToolTip = "Setup for ability, such as shoot, aim etc"))
     TArray<FAbilitySet_GameplayAbility> WeaponAbilitySet;
    
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Shop Appearance")
+    TSoftObjectPtr<UObject> ImageTexture;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Shop Appearance")
+    FVector2D size = {250, 100};
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget")
     TSubclassOf<UUserWidget> ReticleWidget;
 

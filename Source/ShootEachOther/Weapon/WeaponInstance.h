@@ -23,7 +23,7 @@ class SHOOTEACHOTHER_API UWeaponInstance : public UObject
 public:
 	UWeaponInstance();
 
-	void InitializeWeaponInstance(const FWeaponData& Data);
+	void InitializeWeaponInstance(const EWeaponType& type,const FWeaponData& Data);
 
 	/*Return defaults weapon data*/
 	UFUNCTION(BlueprintCallable, Category = "WeaponInstance")
@@ -41,13 +41,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "WeaponInstance")
 	void RemoveStatCount(FGameplayTag Tag, int32 Amount);
 
+	/*Grant the ability, create and attach the weapon blueprint to player*/
+	UFUNCTION(BlueprintCallable, Category = "WeaponInstance")
+	AWeaponBase* InitializeForWeapon(USEOAbilitySystemComponent* asc, AShootEachOtherCharacter* avatarActor);
+
+	UFUNCTION(BlueprintPure, Category = "WeaponInstance")
+	EWeaponType GetWeaponType() const;
+
 	//UFUNCTION(BlueprintCallable, Category = "WeaponInstance")
 	void GiveAbilityToASC(USEOAbilitySystemComponent* asc);
 
 	//UFUNCTION(BlueprintCallable, Category = "WeaponInstance")
 	void ClearAbilityFromASC(USEOAbilitySystemComponent* asc);
-
-	AWeaponBase* InitializeForWeapon(USEOAbilitySystemComponent* asc, AShootEachOtherCharacter* avatarActor);
 
 	ETraceSourceType TraceType = ETraceSourceType::ShootFromCameraToward;
 protected:
@@ -59,6 +64,8 @@ protected:
 	/*Defaults Weapon Data*/
 	UPROPERTY(Replicated)
 	FWeaponData DefaultsData;
+
+	EWeaponType WeaponType;
 
 	/*Use for grant ability in order to explicily clear input*/
 	int32 UniqueInputID;

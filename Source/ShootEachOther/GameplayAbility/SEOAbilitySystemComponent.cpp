@@ -17,6 +17,7 @@ void USEOAbilitySystemComponent::ProcessAllAbility(float DeltaTime, bool bGamePa
 {
 	if (HasMatchingGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked))
 	{
+		UE_LOG(LogTemp, Error, TEXT("Blocking ability"));
 		ClearAbilityInput();
 		return;
 	}
@@ -67,7 +68,6 @@ void USEOAbilitySystemComponent::ProcessAllAbility(float DeltaTime, bool bGamePa
 				AbilitySpec->InputPressed = false;
 				
 				if (AbilitySpec->IsActive()) {
-					UE_LOG(LogTemp, Display, TEXT("MArk as release"));
 					AbilitySpecInputReleased(*AbilitySpec);
 				}
 			}

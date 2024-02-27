@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagCollection.h"
 #include "SEO_PlayerComponent.generated.h"
 
 class AShootEachOtherPlayerController;
@@ -26,11 +27,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData", ReplicatedUsing = OnRep_PawnData)
 	TObjectPtr<const USEOPawnData> PawnData;
 
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetNativeInputEnable(bool Disable = false);
+
 protected:
 
 	USEO_AttributeSet* m_AttributeSet;
-
 	TObjectPtr<APawn> m_Pawn;
+
+	bool DisableNativeInput;
 
 protected:
 	// Called when the game starts
@@ -58,7 +64,7 @@ protected:
 
 	friend AShootEachOtherPlayerController;
 
-protected:
+
 	
 
 };

@@ -8,6 +8,7 @@
 #include "GameplayAbility/SEOAbilitySystemComponent.h"
 #include "Weapon/WeaponBase.h"
 #include "Misc/Guid.h"
+#include "GameplayTagContainer.h"
 #include "Character/ShootEachOtherCharacter.h"
 
 UWeaponInstance::UWeaponInstance()
@@ -15,9 +16,10 @@ UWeaponInstance::UWeaponInstance()
 	
 }
 
-void UWeaponInstance::InitializeWeaponInstance(const FWeaponData& Data)
+void UWeaponInstance::InitializeWeaponInstance(const EWeaponType& type, const FWeaponData& Data)
 {
 	DefaultsData = Data;
+	WeaponType = type;
 	{
 		FGuid UniqueGuid;
 		FPlatformMisc::CreateGuid(UniqueGuid);
@@ -77,11 +79,8 @@ void UWeaponInstance::GiveAbilityToASC(USEOAbilitySystemComponent* asc)
 
 void UWeaponInstance::ClearAbilityFromASC(USEOAbilitySystemComponent* asc)
 {
-	if (asc) {
-		//for (const FAbilitySet_GameplayAbility& GA : DefaultsData.WeaponAbilitySet) {
-		asc->ClearAllAbilitiesWithInputID(UniqueInputID);
-		//}
-	}
+	asc->ClearAllAbilitiesWithInputID(UniqueInputID);
+	
 }
 
 AWeaponBase* UWeaponInstance::InitializeForWeapon(USEOAbilitySystemComponent* asc, AShootEachOtherCharacter* avatarActor)
@@ -90,10 +89,14 @@ AWeaponBase* UWeaponInstance::InitializeForWeapon(USEOAbilitySystemComponent* as
 	if (World != nullptr) {
 		//Set Spawn Collision Handling Override
 		FActorSpawnParameters ActorSpawnParams;
-		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
+		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		ActorSpawnParams.Instigator = avatarActor;
 		AWeaponBase* weapon = World->SpawnActor<AWeaponBase>(DefaultsData.WeaponClass, ActorSpawnParams);
-		avatarActor->SetHasRifle(true);
+
+		if (!weapon) {
+			UE_LOG(LogTemp, Error, TEXT("Invalid Weapon"));
+			return nullptr;
+		}
 		weapon->AttachToComponent(avatarActor->GetMesh(),
 			FAttachmentTransformRules::SnapToTargetNotIncludingScale, DefaultsData.AttachName);
 
@@ -101,7 +104,7 @@ AWeaponBase* UWeaponInstance::InitializeForWeapon(USEOAbilitySystemComponent* as
 			
 			GiveAbilityToASC(asc);
 		}
-
+		
 		UE_LOG(LogTemp, Warning, TEXT("Set current weapon success"));
 
 		return weapon;
@@ -110,6 +113,11 @@ AWeaponBase* UWeaponInstance::InitializeForWeapon(USEOAbilitySystemComponent* as
 	return nullptr;
 	
 
+}
+
+EWeaponType UWeaponInstance::GetWeaponType() const
+{
+	return WeaponType;
 }
 
 void UWeaponInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

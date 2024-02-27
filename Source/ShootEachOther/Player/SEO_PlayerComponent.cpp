@@ -9,7 +9,6 @@
 #include "Character/ShootEachOtherCharacter.h"
 #include "Camera/CameraComponent.h"
 
-#include "GameplayTagCollection.h"
 #include "GameplayAbility/SEO_AbilitySet.h"
 #include "GameplayAbility/SEOAbilitySystemComponent.h"
 
@@ -79,12 +78,13 @@ void USEO_PlayerComponent::InitializeInputBinding(UInputComponent* IC)
 
 void USEO_PlayerComponent::Input_Move(const FInputActionValue& Value)
 {
+
 	if (!m_Pawn)
 		return;
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (m_Pawn->Controller != nullptr)
+	if (m_Pawn->Controller != nullptr && !DisableNativeInput)
 	{
 		// add movement 
 		m_Pawn->AddMovementInput(m_Pawn->GetActorForwardVector(), MovementVector.Y);
@@ -99,7 +99,7 @@ void USEO_PlayerComponent::Input_Look(const FInputActionValue& Value)
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (m_Pawn->Controller != nullptr)
+	if (m_Pawn->Controller != nullptr && !DisableNativeInput)
 	{
 		// add yaw and pitch input to controller
 		m_Pawn->AddControllerYawInput(LookAxisVector.X);
@@ -206,6 +206,11 @@ void USEO_PlayerComponent::InitializeInputContext_Implementation()
 			}
 
 		}
+}
+
+void USEO_PlayerComponent::SetNativeInputEnable(bool Disable)
+{
+	DisableNativeInput = Disable;
 }
 
 

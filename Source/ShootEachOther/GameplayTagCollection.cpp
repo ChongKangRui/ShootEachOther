@@ -11,10 +11,7 @@ namespace GameplayTagsCollection {
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Shoot, "Input.Shoot", "Shoot.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Aim, "Input.Aim", "Aim.");
 
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Slot01, "Input.Slot.01", "Weapon Slot");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Slot02, "Input.Slot.02", "Weapon Slot");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Slot03, "Input.Slot.03", "Weapon Slot");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Slot04, "Input.Slot.04", "Weapon Slot");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Slot, "Input.Slot", "Weapon Slot");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Death, "GameplayEvent.Death", "Event that fires on death. This event only fires on the server.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Reset, "GameplayEvent.Reset", "Event that fires once a player reset is executed.");

@@ -31,4 +31,35 @@ void ASEO_PlayerState::BeginPlay()
 
 }
 
+void ASEO_PlayerState::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	TeamId = NewTeamID;
+}
+
+FGenericTeamId ASEO_PlayerState::GetGenericTeamId() const
+{
+	return TeamId;
+}
+
+int ASEO_PlayerState::GetOwningMoney() const
+{
+	return OwningMoney;
+}
+
+bool ASEO_PlayerState::DeductOwningMoney(const int value)
+{
+	if (OwningMoney - value >= 0) {
+		OwningMoney -= value;
+		return true;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Not enough money to deduct"));
+	return false;
+}
+
+bool ASEO_PlayerState::AddOwningMoney(const int value)
+{
+	OwningMoney += value;
+	return true;
+}
+
 

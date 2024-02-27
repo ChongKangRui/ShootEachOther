@@ -6,10 +6,12 @@
 
 #include "Engine/DataTable.h"
 #include "Weapon/WeaponInstance.h"
+#include "Weapon/WeaponBase.h"
 #include "GameplayAbility/SEOAbilitySystemComponent.h"
 #include "Player/ShootEachOtherPlayerController.h"
 #include "SEO_GlobalFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "GameplayTagCollection.h"
 
 // Sets default values for this component's properties
 UWeaponInventoryComponent::UWeaponInventoryComponent()
@@ -28,7 +30,7 @@ UWeaponInventoryComponent::UWeaponInventoryComponent()
 
 	ActivatingSlot = EWeaponSlotType::None;
 
-	
+
 }
 
 
@@ -60,6 +62,72 @@ void UWeaponInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(ThisClass, AttachedWeapon);
 }
 
+void UWeaponInventoryComponent::SwapWeaponInstance(const EWeaponSlotType ReplacementWeaponSlot, UWeaponInstance* Replacement)
+{
+	if (Replacement) {
+
+		switch (ReplacementWeaponSlot) {
+		case EWeaponSlotType::Primary:
+			UE_LOG(LogTemp, Error, TEXT("Replacement slot primary"));
+			break;
+		case EWeaponSlotType::Secondary:
+			UE_LOG(LogTemp, Error, TEXT("Replacement slot secondary"));
+			break;
+		}
+
+
+		bool ShouldSwapToCurrentWeapon = ReplacementWeaponSlot == ActivatingSlot;
+		/*Swap weapon for activating slot*/
+		if (ShouldSwapToCurrentWeapon) {
+
+			UWeaponInstance* pwi = FindWeaponBySlot(ActivatingSlot);
+			SwitchCurrentWeapon(Replacement, pwi, false);
+			return;
+
+		}
+		/*Swap weapon for non activating slot, so can just simply replace the reference with new weapon data*/
+		else {
+			for (FWeaponSlot& ws : WeaponSlotData) {
+				if (ws.SlotType == ReplacementWeaponSlot) {
+					ws.WeaponInstance = Replacement;
+					
+					return;
+				}
+			}
+		}
+
+	}
+	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "SwapWeapon UnSuccess");
+}
+
+void UWeaponInventoryComponent::SwitchCurrentWeapon(UWeaponInstance* ReplacementInstance, UWeaponInstance* ToReplace, bool UseBlueprintBindFunction)
+{
+	if (AShootEachOtherCharacter* pawn = Cast<AShootEachOtherCharacter>(GetOwner())) {
+		if (const AShootEachOtherPlayerController* controller = Cast<AShootEachOtherPlayerController>(pawn->Controller)) {
+			if (USEOAbilitySystemComponent* asc = controller->GetSEOAbilitySystemComponent()) {
+
+				if (!ReplacementInstance) {
+					USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Invalid replacement weapon instance reference");
+					return;
+				}
+
+				if (ToReplace) {
+					ToReplace->ClearAbilityFromASC(asc);
+					AttachedWeapon->Destroy();
+				}
+				if(UseBlueprintBindFunction)
+					OnWeaponEquip.Broadcast(true, ReplacementInstance);
+				else
+					AttachedWeapon = ReplacementInstance->InitializeForWeapon(asc, pawn);
+
+				/*Make sure activating slot is alway the correct slot*/
+				ActivatingSlot = ReplacementInstance->GetDefaultsWeaponData().EWeaponSlotType;
+			}
+		}
+	}
+}
+#pragma region Getter Function
+
 UWeaponInstance* UWeaponInventoryComponent::FindWeaponBySlot(const EWeaponSlotType type)
 {
 	for (FWeaponSlot& wi : WeaponSlotData) {
@@ -81,7 +149,6 @@ const UWeaponInstance* UWeaponInventoryComponent::FindWeaponBySlot(EWeaponSlotTy
 }
 
 
-
 AWeaponBase* UWeaponInventoryComponent::GetCurrentAttachedWeapon() const
 {
 	return AttachedWeapon;
@@ -97,10 +164,9 @@ const UWeaponInstance* UWeaponInventoryComponent::GetCurrentWeaponInstance() con
 	return FindWeaponBySlot(ActivatingSlot);
 }
 
-
 FWeaponData UWeaponInventoryComponent::GetWeaponDataFromSlot(const EWeaponSlotType WeaponSlot) const
 {
-	
+
 	for (const FWeaponSlot& weaponData : WeaponSlotData) {
 		if (weaponData.SlotType == WeaponSlot) {
 			if (!weaponData.WeaponInstance) {
@@ -114,22 +180,29 @@ FWeaponData UWeaponInventoryComponent::GetWeaponDataFromSlot(const EWeaponSlotTy
 	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "You are trying to find weapon with unknown enum type. ");
 	return FWeaponData();
 }
+
+#pragma endregion
+
+#pragma region Setter Function
+
 void UWeaponInventoryComponent::ResetWeaponSlotToDefault()
 {
 	for (auto& weaponSlot : WeaponSlotData) {
 		weaponSlot.WeaponInstance = nullptr;
 	}
 
-	AddWeaponToSlot(EWeaponType::Pistol);
+	AddWeaponToSlot(EWeaponType::Secondary_Pistol);
+	
 	SetCurrentWeaponSlot(EWeaponSlotType::Secondary);
 
 }
 
 
-void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeaponSlotType WeaponSlot)
+void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeaponSlotType WeaponSlot, bool UseBlueprintBindFunction)
 {
 	if (WeaponSlot == ActivatingSlot) {
 		UE_LOG(LogTemp, Warning, TEXT("Same Slot, no trigger happen"));
+		OnWeaponEquip.Broadcast(false, nullptr);
 		return;
 	}
 	UWeaponInstance* wi = FindWeaponBySlot(WeaponSlot);
@@ -137,35 +210,11 @@ void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeapo
 	if (!wi) {
 		FString str = UEnum::GetValueAsString(WeaponSlot);
 		UE_LOG(LogTemp, Warning, TEXT("No weapon instance in %s slot"), *str);
+		OnWeaponEquip.Broadcast(false, nullptr);
 		return;
 	}
 
-	if (AShootEachOtherCharacter* pawn = Cast<AShootEachOtherCharacter>(GetOwner())) {
-		if (const AShootEachOtherPlayerController* controller = Cast<AShootEachOtherPlayerController>(pawn->Controller)){
-			if (USEOAbilitySystemComponent* asc = controller->GetSEOAbilitySystemComponent()) {
-				UWeaponInstance* pwi = FindWeaponBySlot(ActivatingSlot);
-				if(ActivatingSlot != EWeaponSlotType::None && pwi)
-					pwi->ClearAbilityFromASC(asc);
-				
-				//WeaponSlotData[WeaponSlot]->GiveAbilityToASC(asc);
-				AttachedWeapon = wi->InitializeForWeapon(asc, pawn);
-				
-				/*Spawn gun and attach to character*/
-				USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Ini weapon finish");
-				
-				ActivatingSlot = WeaponSlot;
-			}
-			else {
-				USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Invalid ASC");
-			}
-
-		}
-		else
-			USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Invalid controller");
-
-	}
-	else
-		USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "invalid pawn");
+	SwitchCurrentWeapon(wi, FindWeaponBySlot(ActivatingSlot), UseBlueprintBindFunction);
 }
 
 void UWeaponInventoryComponent::ClearWeaponSlotData(const EWeaponSlotType WeaponSlot)
@@ -213,21 +262,19 @@ void UWeaponInventoryComponent::AddWeaponToSlot(const EWeaponType WeaponType, bo
 
 	//Create Weapon instance
 	UWeaponInstance* WI = NewObject<UWeaponInstance>();
-	WI->InitializeWeaponInstance(*data);
+	WI->InitializeWeaponInstance(WeaponType,*data);
 
-	for (FWeaponSlot& ws : WeaponSlotData) {
-		if (ws.SlotType == data->EWeaponSlotType)
-			ws.WeaponInstance = WI;
-	}
+	SwapWeaponInstance(data->EWeaponSlotType, WI);
 	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Warning, "Finished Weapon ADDed");
 }
 
+#pragma endregion
 
-
+#pragma region Weapon Stat Getter and Setter
 /// Weapon Stat Related
 int32 UWeaponInventoryComponent::GetWeaponStatCount(const EWeaponSlotType WeaponSlot, const FGameplayTag StatTag) const
 {
-	if (const UWeaponInstance* wi = FindWeaponBySlot(WeaponSlot)){
+	if (const UWeaponInstance* wi = FindWeaponBySlot(WeaponSlot)) {
 		return wi->GetStatCount(StatTag);
 	}
 	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Weapon Slot may not contain data to Get Stat!!!");
@@ -265,6 +312,7 @@ void UWeaponInventoryComponent::RemoveCurrentWeaponStatCount(const FGameplayTag 
 	RemoveWeaponStatCount(ActivatingSlot, StatTag, value);
 }
 
+#pragma endregion
 /// Weapon Stat End Related
 
 
