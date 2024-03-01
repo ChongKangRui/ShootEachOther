@@ -26,7 +26,7 @@ void USGA_Shoot::StartWeaponTrace()
 	}
 
 	if (const UWeaponInstance* wi = GetEquippedWeaponInstance()) {
-		const AShootEachOtherCharacter* character = GetSEOCharacter();
+		AShootEachOtherCharacter* character = GetSEOCharacter();
 		if (character && character->IsLocallyControlled()) {
 
 			//For loop so it is flexible when come to shotgun circumstance
@@ -52,6 +52,7 @@ void USGA_Shoot::StartWeaponTrace()
 					OnWeaponFired_Server({ Hit });
 				}
 			}
+			character->AddControllerPitchInput(wi->GetDefaultsWeaponData().Recoil);
 
 		}
 		

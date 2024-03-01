@@ -8,7 +8,12 @@ void UWeaponButtonWidget::BuyWeapon(const EWeaponType& WeaponToGrant)
 {
 	if (const APlayerController* pc = GetOwningPlayer()) {
 		if (UWeaponInventoryComponent* wic = pc->GetPawn()->GetComponentByClass<UWeaponInventoryComponent>()) {
-			wic->AddWeaponToSlot(WeaponToGrant, true);
+			if (pc->HasAuthority())
+				wic->AddWeaponToSlot(WeaponToGrant, true);
+			else
+				wic->AddWeaponToSlot_Server(WeaponToGrant, true);
 		}
+	
 	}
+	
 }

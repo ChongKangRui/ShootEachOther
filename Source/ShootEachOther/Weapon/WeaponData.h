@@ -49,6 +49,14 @@ enum class ETraceSourceType : uint8 {
     ShootFromWeaponFiringPointToward
 };
 
+UENUM(BlueprintType)
+enum class EAimCameraType : uint8 {
+    None,
+    CameraTransformToADSPoint,
+    /*If we have the widget*/
+    UseWidgetAndHideWeaponAndPlayerBody
+};
+
 
 UENUM(BlueprintType)
 enum class EWeaponSlotType : uint8 {
@@ -105,15 +113,18 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
     float Rate = 1.0;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    float Recoil = 0.1f;
+
     /*Consider shotgun and some special case*/
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
     int BulletPerShoot = 1;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
-    bool CanAutoShoot = false;
+    float ShopPrice = 1000.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
-    float ShopPrice = 1000.0f;
+    EAimCameraType AimingCameraType = EAimCameraType::None;
 
     /*When aiming with right mmouse button*/
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Trace Type")
@@ -135,7 +146,8 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Shop Appearance")
     FVector2D size = {250, 100};
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget")
+    
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget", meta =( EditCondition = "AimingCameraType == EAimCameraType::UseWidgetAndHideWeaponAndPlayerBody"))
     TSubclassOf<UUserWidget> ReticleWidget;
 
     /*Hide the Black crosshair when aiming*/
@@ -153,8 +165,8 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
     UAnimMontage* EquipMontage;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
-    UAnimMontage* UnequipMontage;
+   /* UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
+    UAnimMontage* UnequipMontage;*/
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
     UAnimMontage* ShootMontage;

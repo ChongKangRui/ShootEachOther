@@ -38,6 +38,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<USceneComponent> ShootingPoint;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> HandIK_L;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> ADSCameraPoint;
 	
 	/*Use this to keep the instancce reference when drop weapon*/
 	UPROPERTY(BlueprintReadOnly)

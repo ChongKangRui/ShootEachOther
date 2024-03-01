@@ -15,7 +15,12 @@ AWeaponBase::AWeaponBase(const FObjectInitializer& ObjectInitializer)
 	ShootingPoint = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("ShootingPoint"));
 	ShootingPoint->AttachToComponent(DefaultsSceneRoot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-//	ShootPoint->AttachToComponent(GetDefault, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	HandIK_L = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("HandIK Left"));
+	HandIK_L->AttachToComponent(DefaultsSceneRoot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+	ADSCameraPoint = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("ADS Camera Point"));
+	ADSCameraPoint->AttachToComponent(DefaultsSceneRoot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
 }
 
 void AWeaponBase::SetWeaponData(UWeaponInstance* WI)

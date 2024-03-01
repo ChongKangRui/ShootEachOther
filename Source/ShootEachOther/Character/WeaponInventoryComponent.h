@@ -46,6 +46,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon Slot Component")
 	void ResetWeaponSlotToDefault();
 
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Weapon Slot Component")
+	void AddWeaponToSlot_Server(const EWeaponType WeaponType, bool ReplaceWeapon = false);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Weapon Slot Component")
+	void AddWeaponToSlot_MultiCast(const EWeaponType WeaponType, bool ReplaceWeapon = false);
+
 	UFUNCTION(BlueprintCallable, Category = "Weapon Slot Component")
 	void AddWeaponToSlot(const EWeaponType WeaponType, bool ReplaceWeapon = false);
 

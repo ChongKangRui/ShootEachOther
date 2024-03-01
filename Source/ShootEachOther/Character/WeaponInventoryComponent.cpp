@@ -197,6 +197,16 @@ void UWeaponInventoryComponent::ResetWeaponSlotToDefault()
 
 }
 
+void UWeaponInventoryComponent::AddWeaponToSlot_Server_Implementation(const EWeaponType WeaponType, bool ReplaceWeapon)
+{
+	AddWeaponToSlot_MultiCast(WeaponType, ReplaceWeapon);
+}
+
+void UWeaponInventoryComponent::AddWeaponToSlot_MultiCast_Implementation(const EWeaponType WeaponType, bool ReplaceWeapon)
+{
+	AddWeaponToSlot(WeaponType, ReplaceWeapon);
+}
+
 
 void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeaponSlotType WeaponSlot, bool UseBlueprintBindFunction)
 {
