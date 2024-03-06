@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameplayTagStack.h"
 #include "WeaponData.h"
-
 #include "WeaponInstance.generated.h"
 
 /**
@@ -51,13 +50,16 @@ public:
 	//UFUNCTION(BlueprintCallable, Category = "WeaponInstance")
 	void GiveAbilityToASC(USEOAbilitySystemComponent* asc);
 
+	virtual bool IsSupportedForNetworking() const override { return true; }
+	//virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
 	//UFUNCTION(BlueprintCallable, Category = "WeaponInstance")
 	void ClearAbilityFromASC(USEOAbilitySystemComponent* asc);
 
 	ETraceSourceType TraceType = ETraceSourceType::ShootFromCameraToward;
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+	
 	UPROPERTY(Replicated)
 	FGameplayTagStackContainer StatTags;
 
@@ -69,4 +71,34 @@ protected:
 
 	/*Use for grant ability in order to explicily clear input*/
 	int32 UniqueInputID;
+
+protected:
+	virtual UWorld* GetWorld() const override
+	{
+		if (const UObject* MyOuter = GetOuter())
+		{
+			return MyOuter->GetWorld();
+		}
+		return nullptr;
+	}
+
+	UFUNCTION(BlueprintPure, Category = "My Object")
+	AActor* GetOwningActor() const
+	{
+		return GetTypedOuter<AActor>();
+	}
+
+	// Call "Remote" (aka, RPC) functions through the actors NetDriver
+	virtual bool CallRemoteFunction(UFunction* Function, void* Parms, struct FOutParmRec* OutParms, FFrame* Stack) override
+	{
+		check(!HasAnyFlags(RF_ClassDefaultObject));
+		AActor* Owner = GetOwningActor();
+		UNetDriver* NetDriver = Owner->GetNetDriver();
+		if (NetDriver)
+		{
+			NetDriver->ProcessRemoteFunction(Owner, Function, Parms, OutParms, Stack, this);
+			return true;
+		}
+		return false;
+	}
 };

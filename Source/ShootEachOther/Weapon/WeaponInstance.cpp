@@ -11,6 +11,8 @@
 #include "GameplayTagContainer.h"
 #include "Character/ShootEachOtherCharacter.h"
 
+
+
 UWeaponInstance::UWeaponInstance()
 {
 	
@@ -18,6 +20,7 @@ UWeaponInstance::UWeaponInstance()
 
 void UWeaponInstance::InitializeWeaponInstance(const EWeaponType& type, const FWeaponData& Data)
 {
+	
 	DefaultsData = Data;
 	WeaponType = type;
 	{
@@ -73,6 +76,8 @@ void UWeaponInstance::GiveAbilityToASC(USEOAbilitySystemComponent* asc)
 			specToGrant.InputID = UniqueInputID;
 			asc->GiveAbility(specToGrant);
 
+			UE_LOG(LogTemp, Error, TEXT("give ability success"));
+
 		}
 	}
 }
@@ -100,10 +105,9 @@ AWeaponBase* UWeaponInstance::InitializeForWeapon(USEOAbilitySystemComponent* as
 		weapon->AttachToComponent(avatarActor->GetMesh(),
 			FAttachmentTransformRules::SnapToTargetNotIncludingScale, DefaultsData.AttachName);
 
-		if (asc->IsOwnerActorAuthoritative()) {
-			
-			GiveAbilityToASC(asc);
-		}
+		
+		GiveAbilityToASC(asc);
+		
 		
 		UE_LOG(LogTemp, Warning, TEXT("Set current weapon success"));
 
@@ -127,4 +131,8 @@ void UWeaponInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(ThisClass, StatTags);
 	DOREPLIFETIME(ThisClass, DefaultsData);
 }
+
+
+
+
 

@@ -131,7 +131,7 @@ void USEO_PlayerComponent::Input_AbilityTagPressed(FGameplayTag tag)
 	
 		
 	if (const auto asc = seoplayerState->GetSEOAbilitySystemComponent()) {
-		UE_LOG(LogTemp, Display, TEXT("SEO Pressed Ability Trigger"));
+		//UE_LOG(LogTemp, Display, TEXT("SEO Pressed Ability Trigger"));
 		asc->AbilityInputTagPressed(tag);
 	}
 		
