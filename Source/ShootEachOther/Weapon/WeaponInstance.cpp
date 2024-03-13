@@ -96,6 +96,7 @@ AWeaponBase* UWeaponInstance::InitializeForWeapon(USEOAbilitySystemComponent* as
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		ActorSpawnParams.Instigator = avatarActor;
+		ActorSpawnParams.Owner = avatarActor;
 		AWeaponBase* weapon = World->SpawnActor<AWeaponBase>(DefaultsData.WeaponClass, ActorSpawnParams);
 
 		if (!weapon) {
@@ -113,6 +114,7 @@ AWeaponBase* UWeaponInstance::InitializeForWeapon(USEOAbilitySystemComponent* as
 
 		return weapon;
 	}
+	
 	
 	return nullptr;
 	

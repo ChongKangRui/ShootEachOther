@@ -51,9 +51,6 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Weapon Slot Component")
 	void AddWeaponToSlot_Server(const EWeaponType WeaponType, bool ReplaceWeapon = false);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Weapon Slot Component")
-	void AddWeaponToSlot_MultiCast(const EWeaponType WeaponType, bool ReplaceWeapon = false);
-
 	UFUNCTION(BlueprintCallable, Category = "Weapon Slot Component")
 	void AddWeaponToSlot(const EWeaponType WeaponType, bool ReplaceWeapon = false);
 
@@ -164,6 +161,11 @@ protected:
 private:
 	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
+	UFUNCTION(Server, Reliable)
+	void OnWeaponChanged_Server(bool SwitchWeaponSuccess, UWeaponInstance* ReplacementInstance);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void OnWeaponChanged_Multicast(bool SwitchWeaponSuccess, UWeaponInstance* ReplacementInstance);
 
 	friend class USEO_GameplayAbility;
 

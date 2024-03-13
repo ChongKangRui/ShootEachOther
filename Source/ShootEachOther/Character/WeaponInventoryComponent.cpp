@@ -116,16 +116,6 @@ void UWeaponInventoryComponent::SetAttachedWeapon_Server_Implementation(AWeaponB
 	AttachedWeapon = passinWeapon;
 }
 
-//void UWeaponInventoryComponent::SwitchCurrentWeapon_Server_Implementation(UWeaponInstance* ReplacementInstance, UWeaponInstance* ToReplace, bool UseBlueprintBindFunction)
-//{
-//	SwitchCurrentWeapon_Client(ReplacementInstance, ToReplace, UseBlueprintBindFunction);
-//}
-//
-//void UWeaponInventoryComponent::SwitchCurrentWeapon_Client_Implementation(UWeaponInstance* ReplacementInstance, UWeaponInstance* ToReplace, bool UseBlueprintBindFunction)
-//{
-//	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "multicast switch current weapon");
-//	SwitchCurrentWeapon(ReplacementInstance, ToReplace, UseBlueprintBindFunction);
-//}
 
 void UWeaponInventoryComponent::SwitchCurrentWeapon_Implementation(UWeaponInstance* ReplacementInstance, UWeaponInstance* ToReplace, bool UseBlueprintBindFunction)
 {
@@ -144,21 +134,18 @@ void UWeaponInventoryComponent::SwitchCurrentWeapon_Implementation(UWeaponInstan
 					ToReplace->ClearAbilityFromASC(asc);
 					AttachedWeapon->Destroy();
 				}
-				if(UseBlueprintBindFunction)
-					OnWeaponEquip.Broadcast(true, ReplacementInstance);
+				if (UseBlueprintBindFunction) {
+					OnWeaponChanged_Multicast(true, ReplacementInstance);
+				}
 				else {
 					if (pawn->HasAuthority()) {
-						USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Set Success");
+						USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Set weapon Success");
 						AttachedWeapon = ReplacementInstance->InitializeForWeapon(asc, pawn);
-					}
-					else {
-						USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "apa lanjiao?");
 					}
 				}
 
 				/*Make sure activating slot is alway the correct slot*/
 				ActivatingSlot = ReplacementInstance->GetDefaultsWeaponData().EWeaponSlotType;
-				USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Weapon Instance Switch success");
 			}
 			else
 				USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Invalid asc");
@@ -173,15 +160,7 @@ void UWeaponInventoryComponent::SwitchCurrentWeapon_Implementation(UWeaponInstan
 
 UWeaponInstance* UWeaponInventoryComponent::FindWeaponBySlot(const EWeaponSlotType type)
 {
-	//for (UWeaponInstance* wi : WeaponSlotData) {
-	//	if (!wi) {
-	//		USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Invalid Weapon Instance but got a reference in array");
-	//		continue;
-	//	}
-	//		if (wi->GetDefaultsWeaponData().EWeaponSlotType == type)
-	//			return wi;
-	//	
-	//}
+
 	for (FWeaponSlot& wi : WeaponSlotData) {
 		if (wi.SlotType == type)
 			return wi.WeaponInstance;
@@ -192,14 +171,6 @@ UWeaponInstance* UWeaponInventoryComponent::FindWeaponBySlot(const EWeaponSlotTy
 
 const UWeaponInstance* UWeaponInventoryComponent::FindWeaponBySlot(EWeaponSlotType type) const
 {
-	//for (const UWeaponInstance* wi : WeaponSlotData) {
-	//	if (!wi) {
-	//		USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Invalid Weapon Instance but got a reference in array");
-	//		continue;
-	//	}
-	//	if (wi->GetDefaultsWeaponData().EWeaponSlotType == type)
-	//		return wi;
-	//}
 	for (const FWeaponSlot& wi : WeaponSlotData) {
 		if (wi.SlotType == type)
 			return wi.WeaponInstance;
@@ -233,16 +204,6 @@ const UWeaponInstance* UWeaponInventoryComponent::GetCurrentWeaponInstance() con
 FWeaponData UWeaponInventoryComponent::GetWeaponDataFromSlot(const EWeaponSlotType WeaponSlot) const
 {
 
-	//for (const UWeaponInstance* weaponData : WeaponSlotData) {
-	//	if (!weaponData) {
-	//		USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Invalid Weapon Instance but got a reference in array");
-	//		continue;
-	//	}
-	//	if (weaponData->GetDefaultsWeaponData().EWeaponSlotType == WeaponSlot) {
-	//		
-	//		return weaponData->GetDefaultsWeaponData();
-	//	}
-	//}
 	for (const FWeaponSlot& weaponData : WeaponSlotData) {
 		if (weaponData.SlotType == WeaponSlot) {
 			if (!weaponData.WeaponInstance) {
@@ -268,6 +229,7 @@ void UWeaponInventoryComponent::ResetWeaponSlotToDefault()
 	
 	//WeaponSlotData.Empty();
 	AddWeaponToSlot_Server(EWeaponType::Secondary_Pistol);
+	AddWeaponToSlot_Server(EWeaponType::Melee_DefaultsKnife);
 	
 	SetCurrentWeaponSlot(EWeaponSlotType::Secondary);
 
@@ -278,17 +240,14 @@ void UWeaponInventoryComponent::AddWeaponToSlot_Server_Implementation(const EWea
 	AddWeaponToSlot(WeaponType, ReplaceWeapon);
 }
 
-void UWeaponInventoryComponent::AddWeaponToSlot_MultiCast_Implementation(const EWeaponType WeaponType, bool ReplaceWeapon)
-{
-	AddWeaponToSlot(WeaponType, ReplaceWeapon);
-}
+
 
 
 void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeaponSlotType WeaponSlot, bool UseBlueprintBindFunction)
 {
 	if (WeaponSlot == ActivatingSlot) {
 		UE_LOG(LogTemp, Warning, TEXT("Same Slot, no trigger happen"));
-		OnWeaponEquip.Broadcast(false, nullptr);
+		OnWeaponChanged_Multicast(false, nullptr);
 		return;
 	}
 	UWeaponInstance* wi = FindWeaponBySlot(WeaponSlot);
@@ -297,7 +256,7 @@ void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeapo
 		FString str = UEnum::GetValueAsString(WeaponSlot);
 		USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "No weapon instance in slot");
 		UE_LOG(LogTemp, Warning, TEXT("No weapon instance in %s slot"), *str);
-		OnWeaponEquip.Broadcast(false, nullptr);
+		OnWeaponChanged_Multicast(false, nullptr);
 		return;
 	}
 	
@@ -306,12 +265,6 @@ void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeapo
 
 void UWeaponInventoryComponent::ClearWeaponSlotData(const EWeaponSlotType WeaponSlot)
 {
-	//for (int i = 0; i < WeaponSlotData.Num();i++) {
-	//	if (WeaponSlotData[i]->GetDefaultsWeaponData().EWeaponSlotType == WeaponSlot) {
-	//		WeaponSlotData.RemoveAt(i);
-	//		return;
-	//	}
-	//}
 
 	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "You are trying to clear weapon with None enum type. ");
 }
@@ -355,52 +308,6 @@ void UWeaponInventoryComponent::AddWeaponToSlot(const EWeaponType WeaponType, bo
 }
 
 #pragma endregion
-
-//#pragma region Weapon Stat Getter and Setter
-///// Weapon Stat Related
-//int32 UWeaponInventoryComponent::GetWeaponStatCount(const EWeaponSlotType WeaponSlot, const FGameplayTag StatTag) const
-//{
-//	if (const UWeaponInstance* wi = FindWeaponBySlot(WeaponSlot)) {
-//		return wi->GetStatCount(StatTag);
-//	}
-//	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Weapon Slot may not contain data to Get Stat!!!");
-//	return -1;
-//}
-//
-//int32 UWeaponInventoryComponent::GetCurrentWeaponStatCount(const FGameplayTag StatTag) const
-//{
-//	return GetWeaponStatCount(ActivatingSlot, StatTag);
-//}
-//
-//void UWeaponInventoryComponent::AddWeaponStatCount(const EWeaponSlotType WeaponSlot, const FGameplayTag StatTag, const int32 value)
-//{
-//	if (UWeaponInstance* wi = FindWeaponBySlot(WeaponSlot)) {
-//		wi->AddStatCount(StatTag, value);
-//	}
-//	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Weapon Slot may not contain data to Add Stat!!!");
-//}
-//
-//void UWeaponInventoryComponent::AddCurrentWeaponStatCount(const FGameplayTag StatTag, const int32 value)
-//{
-//	AddWeaponStatCount(ActivatingSlot, StatTag, value);
-//}
-//
-//void UWeaponInventoryComponent::RemoveWeaponStatCount(const EWeaponSlotType WeaponSlot, const FGameplayTag StatTag, const int32 value)
-//{
-//	if (UWeaponInstance* wi = FindWeaponBySlot(WeaponSlot)) {
-//		wi->RemoveStatCount(StatTag, value);
-//	}
-//	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "Weapon Slot may not contain data to Remove Stat!!!");
-//}
-//
-//void UWeaponInventoryComponent::RemoveCurrentWeaponStatCount(const FGameplayTag StatTag, const int32 value)
-//{
-//	RemoveWeaponStatCount(ActivatingSlot, StatTag, value);
-//}
-//
-//#pragma endregion
-/// Weapon Stat End Related
-
 bool UWeaponInventoryComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
 {
 	bool out = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
@@ -408,6 +315,16 @@ bool UWeaponInventoryComponent::ReplicateSubobjects(UActorChannel* Channel, FOut
 		Channel->ReplicateSubobject(data.WeaponInstance, *Bunch, *RepFlags);
 	}
 	return out;
+}
+
+void UWeaponInventoryComponent::OnWeaponChanged_Server_Implementation(bool SwitchWeaponSuccess, UWeaponInstance* ReplacementInstance)
+{
+	OnWeaponChanged_Multicast(SwitchWeaponSuccess, ReplacementInstance);
+}
+
+void UWeaponInventoryComponent::OnWeaponChanged_Multicast_Implementation(bool SwitchWeaponSuccess, UWeaponInstance* ReplacementInstance)
+{
+	OnWeaponEquip.Broadcast(SwitchWeaponSuccess, ReplacementInstance);
 }
 
 

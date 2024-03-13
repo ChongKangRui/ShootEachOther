@@ -167,7 +167,7 @@ FVector USGA_Shoot::GetTraceStart(const ETraceSourceType& type) const
 		const UWeaponInventoryComponent* wic = GetWeaponInventoryComponent();
 		if (wic) {
 			if (const AWeaponBase* AttachedWeapon = wic->GetCurrentAttachedWeapon()) {
-				return AttachedWeapon->GetShootingPoint()->GetComponentLocation();
+				return AttachedWeapon->GetTraceStart()->GetComponentLocation();
 			}
 		}
 		UE_LOG(LogTemp, Error, TEXT("Invalid weapon inventory component or attached weapon reference !!!"));
@@ -189,9 +189,9 @@ FVector USGA_Shoot::GetTraceDirection(const ETraceSourceType& type, const float&
 		const UWeaponInventoryComponent* wic = GetWeaponInventoryComponent();
 		if (wic) {
 			if (const AWeaponBase* AttachedWeapon = wic->GetCurrentAttachedWeapon()) {
-				UE_LOG(LogTemp, Warning, TEXT("firepoint Forward %s"), *AttachedWeapon->GetShootingPoint()->GetForwardVector().ToString());
-				FVector WeaponPointForwardVector = AttachedWeapon->GetShootingPoint()->GetForwardVector();
-				return AttachedWeapon->GetShootingPoint()->GetComponentLocation() + (WeaponPointForwardVector * TraceDistance);
+				UE_LOG(LogTemp, Warning, TEXT("firepoint Forward %s"), *AttachedWeapon->GetTraceStart()->GetForwardVector().ToString());
+				FVector WeaponPointForwardVector = AttachedWeapon->GetTraceStart()->GetForwardVector();
+				return AttachedWeapon->GetTraceStart()->GetComponentLocation() + (WeaponPointForwardVector * TraceDistance);
 			}
 		}
 		UE_LOG(LogTemp, Error, TEXT("Invalid weapon inventory component or attached weapon reference !!!"));

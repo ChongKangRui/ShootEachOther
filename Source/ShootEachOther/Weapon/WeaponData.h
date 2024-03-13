@@ -120,11 +120,24 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
     int BulletPerShoot = 1;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute/SpreadExponent", meta = (EditCondition = "BulletPerShoot > 1"))
+    float Exponent;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute/SpreadExponent", meta = (EditCondition = "BulletPerShoot > 1"))
+    float BulletSpreadAngleDegree;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
     float ShopPrice = 1000.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
     EAimCameraType AimingCameraType = EAimCameraType::None;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    float AimFOV = 90.0f;
+
+    /*Only Available if you added left shift to control FOV when aiming*/
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    float AimFOVFromLeftShift = 0.0f;
 
     /*When aiming with right mmouse button*/
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Trace Type")

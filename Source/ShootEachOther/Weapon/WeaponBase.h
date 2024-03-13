@@ -20,7 +20,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponData(UWeaponInstance* WI);
 
-	USceneComponent* GetShootingPoint() const;
+	UFUNCTION(BlueprintCallable)
+	void SetMeshOwnerCanSee(bool CanOwnerSee);
+
+	USceneComponent* GetTraceStart() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,15 +32,24 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<USkeletalMeshComponent> mesh;
+	UFUNCTION(BlueprintImplementableEvent)
+	FVector GetMeleeTraceStart() const;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	FVector GetMeleeTraceEnd() const;
+
+
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USceneComponent> DefaultsSceneRoot;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<USceneComponent> ShootingPoint;
+	TObjectPtr<USceneComponent> ShootVFXPoint;
+
+	/*Only use this when ads on weapon*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> WeaponShootTraceStart;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<USceneComponent> HandIK_L;
@@ -49,5 +61,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UWeaponInstance> WeaponInstance;
 
-
+	/*Store the array at the beginplay, later can use to hide or show to owner*/
+	TMap<USkeletalMeshComponent*, TObjectPtr<USkeletalMesh>> skeletalMeshes;
+	TMap<UStaticMeshComponent*, TObjectPtr<UStaticMesh>> staticMeshes;
 };
