@@ -49,7 +49,7 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void OnWeaponFired_MultiCast(const TArray<FHitResult>& HitResult);
 
-	//UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable)
 	void ApplyDamageToTarget(const float Damage, AActor* HitActor);
 
 

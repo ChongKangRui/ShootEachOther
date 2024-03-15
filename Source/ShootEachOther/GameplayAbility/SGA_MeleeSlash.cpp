@@ -2,4 +2,96 @@
 
 
 #include "GameplayAbility/SGA_MeleeSlash.h"
+#include "SEO_GlobalFunctionLibrary.h"
+#include "GameplayTagCollection.h"
 
+#include "Character/ShootEachOtherCharacter.h"
+#include "GameplayAbility/SEOAbilitySystemComponent.h"
+
+#include "Weapon/WeaponInstance.h"
+#include "Weapon/WeaponBase.h"
+#include "Weapon/WeaponData.h"
+
+void USGA_MeleeSlash::MeleeTrace()
+{
+	if (const UWeaponInstance* wi = GetEquippedWeaponInstance()) {
+		if (const AShootEachOtherCharacter* owner = GetSEOCharacter()) {
+			FWeaponData data = wi->GetDefaultsWeaponData();
+			FVector CameraVector = owner->GetFirstPersonCameraManager()->GetCameraLocation();
+			FVector ForwardVector = CameraVector + (owner->GetFirstPersonCameraManager()->GetActorForwardVector() * data.TraceSphereForwardDistance);
+
+			TArray<FHitResult> HitResults;
+
+			FCollisionQueryParams TraceParams(SCENE_QUERY_STAT(MeleeTrace), /*bTraceComplex=*/ true, /*IgnoreActor=*/ GetAvatarActorFromActorInfo());
+
+			/*ECC_GameTraceChannel2 is weapon trace. Can check DefaultEngine.ini for more detail*/
+			const ECollisionChannel TraceChannel = ECC_GameTraceChannel2;
+
+			GetWorld()->SweepMultiByChannel(HitResults, ForwardVector, ForwardVector, FQuat::Identity, TraceChannel, FCollisionShape::MakeSphere(data.TraceSphereRadius), TraceParams);
+
+			if (DebugDuration > 0.0f) {
+
+				DrawDebugSphere(GetWorld(), ForwardVector, data.TraceSphereRadius, 32,FColor::Red, false, DebugDuration, 0, LineThickness);
+
+			}
+
+			TArray<FHitResult> EnemyHitResult;
+			if (HitResults.Num() > 0)
+			{
+				// Filter the output list to prevent multiple hits on the same actor;
+				// this is to prevent a single bullet dealing damage multiple times to
+				// a single actor if using an overlap trace
+				for (FHitResult& CurHitResult : HitResults)
+				{
+					auto Pred = [&CurHitResult](const FHitResult& Other)
+						{
+							return Other.HitObjectHandle == CurHitResult.HitObjectHandle;
+						};
+
+					if (!EnemyHitResult.ContainsByPredicate(Pred))
+					{
+						EnemyHitResult.Add(CurHitResult);
+						/*Apply damage here*/
+						ApplyDamageToTarget(data.Damage, CurHitResult.GetActor());
+						UE_LOG(LogTemp, Error, TEXT("Hit Name: %s"), *CurHitResult.GetActor()->GetName());
+						if (DebugDuration > 0.0f)
+							DrawDebugPoint(GetWorld(), CurHitResult.ImpactPoint, HitPointThickness, FColor::Green, false, DebugDuration);
+					}
+				}
+
+			}
+
+		}
+	}
+}
+
+void USGA_MeleeSlash::ApplyDamageToTarget_Implementation(const float Damage, AActor* HitActor)
+{
+	/*Apply damage gameplay effect to target*/
+	if (HitActor) {
+		AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
+		if (!Target) {
+			USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Warning, "Invalid Damage Target");
+			return;
+		}
+
+		if (USEOAbilitySystemComponent* TargetASC = Target->GetSEOAbilitySystemComponent()) {
+
+			//Apply damage to target
+			FGameplayEffectSpecHandle DamageEffectHandle = MakeOutgoingGameplayEffectSpec(DamageGE);
+			USEOAbilitySystemComponent* asc = GetSEOAbilitySystemComponent();
+			if (DamageEffectHandle.IsValid() && asc) {
+				//We wan to set the damage during runtime based on weapon data from datatable.
+				FGameplayEffectSpec& spec = *DamageEffectHandle.Data.Get();
+				spec.SetSetByCallerMagnitude(GameplayTagsCollection::WeaponDamage, -Damage);
+				USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Info, "Apply gameplayeffect success");
+
+				//Finally we apply gameplay effect to target
+				asc->ApplyGameplayEffectSpecToTarget(spec, TargetASC);
+				return;
+			}
+		}
+
+
+	}
+}

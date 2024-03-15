@@ -102,22 +102,23 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Type", Meta = (ToolTip = "Damage Per Bullet"))
     EWeaponSlotType EWeaponSlotType = EWeaponSlotType::None;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (ToolTip = "Damage Per Bullet"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (ToolTip = "Damage Per Bullet/Melee"))
     float Damage = 0;
 
     /*Maximum shoot trace distance*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (ToolTip = "Damage Per Bullet"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
     float TraceDistance = 10000.0f;
 
+  
     /*How fast the shooting rate*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
     float Rate = 1.0;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
     float Recoil = 0.1f;
 
     /*Consider shotgun and some special case*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
     int BulletPerShoot = 1;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute/SpreadExponent", meta = (EditCondition = "BulletPerShoot > 1"))
@@ -129,22 +130,28 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
     float ShopPrice = 1000.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
     EAimCameraType AimingCameraType = EAimCameraType::None;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
     float AimFOV = 90.0f;
 
     /*Only Available if you added left shift to control FOV when aiming*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
     float AimFOVFromLeftShift = 0.0f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute/Melee", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Melee"))
+    float TraceSphereRadius = 5.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute/Melee", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Melee"))
+    float TraceSphereForwardDistance = 100.0f;
+
     /*When aiming with right mmouse button*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Trace Type")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Trace Type", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
     ETraceSourceType AimingTraceType = ETraceSourceType::ShootFromWeaponFiringPointToward;
 
     /*When not aimming with right mouse button*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Trace Type")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Trace Type", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
     ETraceSourceType NonAimingTraceType = ETraceSourceType::ShootFromCameraToward;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (ToolTip = "Setup Maximum Bullet per gun/clip "))

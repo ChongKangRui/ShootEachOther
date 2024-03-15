@@ -129,7 +129,7 @@ void USGA_Shoot::OnWeaponFired_MultiCast_Implementation(const TArray<FHitResult>
 	OnWeaponFired(HitResult);
 }
 
-void USGA_Shoot::ApplyDamageToTarget(const float Damage,AActor* HitActor)
+void USGA_Shoot::ApplyDamageToTarget_Implementation(const float Damage,AActor* HitActor)
 {
 	/*Apply damage gameplay effect to target*/
 	if (HitActor) {
