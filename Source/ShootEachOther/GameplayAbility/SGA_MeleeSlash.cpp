@@ -68,30 +68,6 @@ void USGA_MeleeSlash::MeleeTrace()
 void USGA_MeleeSlash::ApplyDamageToTarget_Implementation(const float Damage, AActor* HitActor)
 {
 	/*Apply damage gameplay effect to target*/
-	if (HitActor) {
-		AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
-		if (!Target) {
-			USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Warning, "Invalid Damage Target");
-			return;
-		}
+	USEO_GlobalFunctionLibrary::ApplyDamageToTarget(Damage, DamageGE, GetAvatarActorFromActorInfo(), HitActor);
 
-		if (USEOAbilitySystemComponent* TargetASC = Target->GetSEOAbilitySystemComponent()) {
-
-			//Apply damage to target
-			FGameplayEffectSpecHandle DamageEffectHandle = MakeOutgoingGameplayEffectSpec(DamageGE);
-			USEOAbilitySystemComponent* asc = GetSEOAbilitySystemComponent();
-			if (DamageEffectHandle.IsValid() && asc) {
-				//We wan to set the damage during runtime based on weapon data from datatable.
-				FGameplayEffectSpec& spec = *DamageEffectHandle.Data.Get();
-				spec.SetSetByCallerMagnitude(GameplayTagsCollection::WeaponDamage, -Damage);
-				USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Info, "Apply gameplayeffect success");
-
-				//Finally we apply gameplay effect to target
-				asc->ApplyGameplayEffectSpecToTarget(spec, TargetASC);
-				return;
-			}
-		}
-
-
-	}
 }

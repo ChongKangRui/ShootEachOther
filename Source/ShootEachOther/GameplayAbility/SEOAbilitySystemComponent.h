@@ -23,7 +23,9 @@ public:
 	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;
 	virtual void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
 
+	UFUNCTION(BlueprintCallable)
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
+	UFUNCTION(BlueprintCallable)
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
 private:

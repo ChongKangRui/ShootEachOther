@@ -228,50 +228,16 @@ void UWeaponInventoryComponent::ResetWeaponSlotToDefault()
 {
 	
 	//WeaponSlotData.Empty();
-	AddWeaponToSlot_Server(EWeaponType::Secondary_Pistol);
-	AddWeaponToSlot_Server(EWeaponType::Melee_DefaultsKnife);
+	AddWeaponToSlot(EWeaponType::Secondary_Pistol);
+	AddWeaponToSlot(EWeaponType::Melee_DefaultsKnife);
 	
 	SetCurrentWeaponSlot(EWeaponSlotType::Secondary);
 
 }
 
-void UWeaponInventoryComponent::AddWeaponToSlot_Server_Implementation(const EWeaponType WeaponType, bool ReplaceWeapon)
+void UWeaponInventoryComponent::AddWeaponToSlot_Implementation(const EWeaponType WeaponType, bool ReplaceWeapon)
 {
-	AddWeaponToSlot(WeaponType, ReplaceWeapon);
-}
-
-
-
-
-void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeaponSlotType WeaponSlot, bool UseBlueprintBindFunction)
-{
-	if (WeaponSlot == ActivatingSlot) {
-		UE_LOG(LogTemp, Warning, TEXT("Same Slot, no trigger happen"));
-		OnWeaponChanged_Multicast(false, nullptr);
-		return;
-	}
-	UWeaponInstance* wi = FindWeaponBySlot(WeaponSlot);
 	
-	if (!wi) {
-		FString str = UEnum::GetValueAsString(WeaponSlot);
-		USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "No weapon instance in slot");
-		UE_LOG(LogTemp, Warning, TEXT("No weapon instance in %s slot"), *str);
-		OnWeaponChanged_Multicast(false, nullptr);
-		return;
-	}
-	
-	SwitchCurrentWeapon(wi, FindWeaponBySlot(ActivatingSlot), UseBlueprintBindFunction);
-}
-
-void UWeaponInventoryComponent::ClearWeaponSlotData(const EWeaponSlotType WeaponSlot)
-{
-
-	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "You are trying to clear weapon with None enum type. ");
-}
-
-void UWeaponInventoryComponent::AddWeaponToSlot(const EWeaponType WeaponType, bool ReplaceWeapon)
-{
-
 	if (!WeaponDataTable) {
 		UE_LOG(LogTemp, Error, TEXT("Invalid DataTable"));
 		return;
@@ -301,10 +267,54 @@ void UWeaponInventoryComponent::AddWeaponToSlot(const EWeaponType WeaponType, bo
 	}
 	//Create Weapon instance
 	UWeaponInstance* WI = NewObject<UWeaponInstance>(GetOwner());
-	WI->InitializeWeaponInstance(WeaponType,*data);
-	
+	WI->InitializeWeaponInstance(WeaponType, *data);
+
 	SwapWeaponInstance(data->EWeaponSlotType, WI);
 	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Warning, "Finished Weapon ADDed");
+}
+
+void UWeaponInventoryComponent::DropWeaponFromSlot_Implementation(const EWeaponSlotType WeaponSlotType)
+{
+}
+
+void UWeaponInventoryComponent::RemoveWeaponFromSlot_Implementation(const EWeaponSlotType WeaponSlotType)
+{
+	for (FWeaponSlot& slot : WeaponSlotData) {
+		if (slot.SlotType == WeaponSlotType) {
+			/*if (AttachedWeapon->GetWeaponData() == slot.WeaponInstance) {
+				AttachedWeapon->SetWeaponData(nullptr);
+			}*/
+			slot.WeaponInstance = nullptr;
+			
+		}
+	}
+}
+
+
+void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeaponSlotType WeaponSlot, bool UseBlueprintBindFunction)
+{
+	if (WeaponSlot == ActivatingSlot) {
+		UE_LOG(LogTemp, Warning, TEXT("Same Slot, no trigger happen"));
+		OnWeaponChanged_Multicast(false, nullptr);
+		return;
+	}
+	UWeaponInstance* wi = FindWeaponBySlot(WeaponSlot);
+	
+	if (!wi) {
+		FString str = UEnum::GetValueAsString(WeaponSlot);
+		USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "No weapon instance in slot");
+		UE_LOG(LogTemp, Warning, TEXT("No weapon instance in %s slot"), *str);
+		OnWeaponChanged_Multicast(false, nullptr);
+		return;
+	}
+	
+	SwitchCurrentWeapon(wi, FindWeaponBySlot(ActivatingSlot), UseBlueprintBindFunction);
+}
+
+void UWeaponInventoryComponent::ClearWeaponSlotData(const EWeaponSlotType WeaponSlot)
+{
+
+	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "You are trying to clear weapon with None enum type. ");
 }
 
 #pragma endregion

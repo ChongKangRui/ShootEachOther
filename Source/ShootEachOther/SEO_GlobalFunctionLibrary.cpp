@@ -2,6 +2,14 @@
 
 
 #include "SEO_GlobalFunctionLibrary.h"
+#include "GameplayTagCollection.h"
+
+#include "Character/ShootEachOtherCharacter.h"
+#include "GameplayAbility/SEOAbilitySystemComponent.h"
+
+#include "Weapon/WeaponInstance.h"
+#include "Weapon/WeaponBase.h"
+#include "Weapon/WeaponData.h"
 
 
 
@@ -32,5 +40,38 @@ void USEO_GlobalFunctionLibrary::SEO_Log(const AActor* actor, const ELogType typ
 	case ELogType::Error:
 		UE_LOG(LogTemp, Error, TEXT("%s %s: %s"), *authorityType, *name, *message);
 		break;
+	}
+}
+
+
+void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubclassOf<UGameplayEffect> DamageGE, AActor* Causer, AActor* HitActor)
+{
+	/*Apply damage gameplay effect to target*/
+	if (HitActor) {
+		AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
+		AShootEachOtherCharacter* DamageSource = Cast<AShootEachOtherCharacter>(Causer);
+		if (!Target || !DamageSource) {
+			USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Invalid Damage Target/Causer");
+			return;
+		}
+
+		if (USEOAbilitySystemComponent* TargetASC = Target->GetSEOAbilitySystemComponent()) {
+
+			//Apply damage to target
+			USEOAbilitySystemComponent* asc = DamageSource->GetSEOAbilitySystemComponent();
+			FGameplayEffectSpecHandle DamageEffectHandle = asc->MakeOutgoingSpec(DamageGE, 1,asc->MakeEffectContext());
+
+			if (DamageEffectHandle.IsValid() && asc) {
+				//We wan to set the damage during runtime based on weapon data from datatable.
+				FGameplayEffectSpec& spec = *DamageEffectHandle.Data.Get();
+				spec.SetSetByCallerMagnitude(GameplayTagsCollection::WeaponDamage, -Damage);
+				USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Apply Damage");
+				//Finally we apply gameplay effect to target
+				asc->ApplyGameplayEffectSpecToTarget(spec, TargetASC);
+				return;
+			}
+		}
+
+
 	}
 }

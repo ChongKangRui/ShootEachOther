@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "GameplayEffect.h"
 #include "SEO_GlobalFunctionLibrary.generated.h"
 
 /**
@@ -26,4 +27,6 @@ public:
 	/*Can difference between client and server, allow for more simple control*/
 	UFUNCTION(BlueprintCallable)
 	static void SEO_Log(const AActor* actor, const ELogType type ,FString message);
+	UFUNCTION(BlueprintCallable)
+	static void ApplyDamageToTarget(const float Damage, TSubclassOf<UGameplayEffect> DamageGE,AActor* Causer, AActor* HitActor);
 };

@@ -38,9 +38,9 @@ enum class EWeaponType : uint8 {
     /*Melee*/
     Melee_DefaultsKnife,
     /*Grenade*/
-    Grenade_ExplosiveGrenade,
-    Grenade_FlashLight,
-    Grenade_MolotovCocktail
+    Grenade_Explosive_Grenade,
+    Grenade_Flash_Light,
+    Grenade_Molotov_Cocktail
 };
 
 UENUM(BlueprintType)
@@ -105,8 +105,8 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (ToolTip = "Damage Per Bullet/Melee"))
     float Damage = 0;
 
-    /*Maximum shoot trace distance*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary"))
+    /*Maximum shoot trace distance, it can be radius range to grenade*/
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute", Meta = (EditCondition = "EWeaponSlotType == EWeaponSlotType::Primary || EWeaponSlotType == EWeaponSlotType::Secondary || EWeaponSlotType == EWeaponSlotType::Grenade"))
     float TraceDistance = 10000.0f;
 
   
@@ -122,11 +122,12 @@ public:
     int BulletPerShoot = 1;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute/SpreadExponent", meta = (EditCondition = "BulletPerShoot > 1"))
-    float Exponent;
+    float Exponent = 0;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute/SpreadExponent", meta = (EditCondition = "BulletPerShoot > 1"))
-    float BulletSpreadAngleDegree;
+    float BulletBaseSpreadAngle = 0;
 
+  
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon Attribute")
     float ShopPrice = 1000.0f;
 

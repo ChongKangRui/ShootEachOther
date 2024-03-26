@@ -49,11 +49,17 @@ public:
 	void ResetWeaponSlotToDefault();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Weapon Slot Component")
-	void AddWeaponToSlot_Server(const EWeaponType WeaponType, bool ReplaceWeapon = false);
-
-	UFUNCTION(BlueprintCallable, Category = "Weapon Slot Component")
 	void AddWeaponToSlot(const EWeaponType WeaponType, bool ReplaceWeapon = false);
 
+	/**/
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Weapon Slot Component")
+	void DropWeaponFromSlot(const EWeaponSlotType WeaponSlotType);
+
+	/*This is difference from drop weapon since this should completely free the weapon reference without keeping it alive*/
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Weapon Slot Component")
+	void RemoveWeaponFromSlot(const EWeaponSlotType WeaponSlotType);
+
+	
 	UFUNCTION(BlueprintCallable, Category = "Weapon Slot Component")
 	void ClearWeaponSlotData(const EWeaponSlotType WeaponSlot);
 

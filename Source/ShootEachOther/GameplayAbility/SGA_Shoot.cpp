@@ -15,8 +15,34 @@
 #include "Player/SEO_PlayerComponent.h"
 #include "SEO_GlobalFunctionLibrary.h"
 
+/*Helper function for bullet spread*/
+FVector VRandConeNormalDistribution(const FVector& Dir, const float ConeHalfAngleRad, const float Exponent)
+{
+	if (ConeHalfAngleRad > 0.f)
+	{
+		const float ConeHalfAngleDegrees = FMath::RadiansToDegrees(ConeHalfAngleRad);
 
+		// consider the cone a concatenation of two rotations. one "away" from the center line, and another "around" the circle
+		// apply the exponent to the away-from-center rotation. a larger exponent will cluster points more tightly around the center
+		const float FromCenter = FMath::Pow(FMath::FRand(), Exponent);
+		const float AngleFromCenter = FromCenter * ConeHalfAngleDegrees;
+		const float AngleAround = FMath::FRand() * 360.0f;
 
+		FRotator Rot = Dir.Rotation();
+		FQuat DirQuat(Rot);
+		FQuat FromCenterQuat(FRotator(0.0f, AngleFromCenter, 0.0f));
+		FQuat AroundQuat(FRotator(0.0f, 0.0, AngleAround));
+		FQuat FinalDirectionQuat = DirQuat * AroundQuat * FromCenterQuat;
+
+		FinalDirectionQuat.Normalize();
+
+		return FinalDirectionQuat.RotateVector(FVector::ForwardVector) * Dir.Size();
+	}
+	else
+	{
+		return Dir;
+	}
+}
 
 void USGA_Shoot::StartWeaponTrace()
 {
@@ -30,22 +56,30 @@ void USGA_Shoot::StartWeaponTrace()
 		if (character && character->IsLocallyControlled()) {
 
 			//For loop so it is flexible when come to shotgun circumstance
-			for (int i = 0; i < wi->GetDefaultsWeaponData().BulletPerShoot; i++) {
+			FWeaponData data = wi->GetDefaultsWeaponData();
+			for (int i = 0; i < data.BulletPerShoot; i++) {
 
 				const FVector TraceStart = GetTraceStart(wi->TraceType);
-				const FVector TraceDirection = GetTraceDirection(wi->TraceType, wi->GetDefaultsWeaponData().TraceDistance);
-				
+				const FVector TraceDirection = GetTraceDirection(wi->TraceType, data.TraceDistance);
 
+				const float ActualSpreadAngle = data.BulletBaseSpreadAngle;
+				const float HalfSpreadAngleInRadians = FMath::DegreesToRadians(ActualSpreadAngle * 0.5f);
+
+		
+				const FVector FinalTraceDirection = VRandConeNormalDistribution(TraceDirection, HalfSpreadAngleInRadians, data.Exponent);
 
 				TArray<FHitResult> results;
-				FHitResult Hit = WeaponTrace(TraceStart, TraceDirection, results, 0.0f, DebugDuration);
+				FHitResult Hit = WeaponTrace(TraceStart, FinalTraceDirection, results, 0.0f, DebugDuration);
 
 				/*Apply damage*/
-				ApplyDamageToTarget(wi->GetDefaultsWeaponData().Damage, Hit.GetActor());
+				ApplyDamageToTarget(data.Damage, Hit.GetActor());
 
-				FString msg = FString("TraceDirection  == ") + TraceDirection.ToString();
+				//Debug only enable
+				/*FString msg = FString("TraceDirection  == ") + TraceDirection.ToString();
+				FString msg2 = FString("FinalTraceDirection  == ") + FinalTraceDirection.ToString();
 				USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Error, msg);
-				
+				USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Error, msg2);*/
+
 				if(character->HasAuthority())
 					OnWeaponFired({Hit});
 				else {
@@ -132,32 +166,8 @@ void USGA_Shoot::OnWeaponFired_MultiCast_Implementation(const TArray<FHitResult>
 void USGA_Shoot::ApplyDamageToTarget_Implementation(const float Damage,AActor* HitActor)
 {
 	/*Apply damage gameplay effect to target*/
-	if (HitActor) {
-		AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
-		if (!Target) {
-			USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Warning, "Invalid Damage Target");
-			return;
-		}
-
-		if (USEOAbilitySystemComponent* TargetASC = Target->GetSEOAbilitySystemComponent()) {
-
-			//Apply damage to target
-			FGameplayEffectSpecHandle DamageEffectHandle = MakeOutgoingGameplayEffectSpec(DamageGE);
-			USEOAbilitySystemComponent* asc = GetSEOAbilitySystemComponent();
-			if (DamageEffectHandle.IsValid() && asc) {
-				//We wan to set the damage during runtime based on weapon data from datatable.
-				FGameplayEffectSpec& spec = *DamageEffectHandle.Data.Get();
-				spec.SetSetByCallerMagnitude(GameplayTagsCollection::WeaponDamage, -Damage);
-				USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Info, "Apply gameplayeffect success");
-				
-				//Finally we apply gameplay effect to target
-				asc->ApplyGameplayEffectSpecToTarget(spec, TargetASC);
-				return;
-			}
-		}
+	USEO_GlobalFunctionLibrary::ApplyDamageToTarget(Damage, DamageGE, GetAvatarActorFromActorInfo(), HitActor);
 	
-		
-	}
 }
 
 FVector USGA_Shoot::GetTraceStart(const ETraceSourceType& type) const
@@ -200,7 +210,7 @@ FVector USGA_Shoot::GetTraceDirection(const ETraceSourceType& type, const float&
 	case ETraceSourceType::ShootFromCameraToward:
 		const APlayerCameraManager* CameraManager = GetSEOCharacter()->GetFirstPersonCameraManager();
 		UE_LOG(LogTemp, Warning, TEXT("Cam Forward %s"), *CameraManager->GetActorForwardVector().ToString());
-		FVector CamForwardVector = CameraManager->GetCameraRotation().Vector();
+		FVector CamForwardVector = CameraManager->GetActorForwardVector();
 		return CameraManager->GetCameraLocation() + (CamForwardVector * TraceDistance);
 
 	}
@@ -209,29 +219,4 @@ FVector USGA_Shoot::GetTraceDirection(const ETraceSourceType& type, const float&
 }
 
 
-FVector VRandConeNormalDistribution(const FVector& Dir, const float ConeHalfAngleRad, const float Exponent)
-{
-	if (ConeHalfAngleRad > 0.f)
-	{
-		const float ConeHalfAngleDegrees = FMath::RadiansToDegrees(ConeHalfAngleRad);
 
-		// consider the cone a concatenation of two rotations. one "away" from the center line, and another "around" the circle
-		// apply the exponent to the away-from-center rotation. a larger exponent will cluster points more tightly around the center
-		const float FromCenter = FMath::Pow(FMath::FRand(), Exponent);
-		const float AngleFromCenter = FromCenter * ConeHalfAngleDegrees;
-		const float AngleAround = FMath::FRand() * 360.0f;
-
-		FRotator Rot = Dir.Rotation();
-		FQuat DirQuat(Rot);
-		FQuat FromCenterQuat(FRotator(0.0f, AngleFromCenter, 0.0f));
-		FQuat AroundQuat(FRotator(0.0f, 0.0, AngleAround));
-		FQuat FinalDirectionQuat = DirQuat * AroundQuat * FromCenterQuat;
-		FinalDirectionQuat.Normalize();
-
-		return FinalDirectionQuat.RotateVector(FVector::ForwardVector);
-	}
-	else
-	{
-		return Dir.GetSafeNormal();
-	}
-}

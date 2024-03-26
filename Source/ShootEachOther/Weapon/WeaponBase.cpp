@@ -4,6 +4,8 @@
 #include "WeaponBase.h"
 #include "WeaponInstance.h"
 #include "Character/ShootEachOtherCharacter.h"
+#include "Engine/ActorChannel.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AWeaponBase::AWeaponBase(const FObjectInitializer& ObjectInitializer)
@@ -30,9 +32,14 @@ AWeaponBase::AWeaponBase(const FObjectInitializer& ObjectInitializer)
 
 }
 
-void AWeaponBase::SetWeaponData(UWeaponInstance* WI)
+void AWeaponBase::SetWeaponData_Implementation(UWeaponInstance* WI)
 {
 	WeaponInstance = WI;
+}
+
+UWeaponInstance* AWeaponBase::GetWeaponData() const
+{
+	return WeaponInstance;
 }
 
 void AWeaponBase::SetMeshOwnerCanSee(bool CanOwnerSee)
@@ -99,6 +106,23 @@ void AWeaponBase::Tick(float DeltaTime)
 
 }
 
+void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+
+	DOREPLIFETIME(ThisClass, WeaponInstance);
+	
+
+
+}
+
+bool AWeaponBase::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	Channel->ReplicateSubobject(WeaponInstance, *Bunch, *RepFlags);
+	return Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	
+}
 
 
 USceneComponent* AWeaponBase::GetTraceStart() const

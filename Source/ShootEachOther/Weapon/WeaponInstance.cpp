@@ -70,11 +70,14 @@ void UWeaponInstance::GiveAbilityToASC(USEOAbilitySystemComponent* asc)
 				continue;
 			}
 
-			USEO_GameplayAbility* ability = GA.Ability->GetDefaultObject<USEO_GameplayAbility>();
-			FGameplayAbilitySpec specToGrant(ability, GA.AbilityLevel);
-			specToGrant.DynamicAbilityTags.AddTag(GA.InputTag);
-			specToGrant.InputID = UniqueInputID;
-			asc->GiveAbility(specToGrant);
+			if (!asc->HasMatchingGameplayTag(GA.InputTag)) {
+				USEO_GameplayAbility* ability = GA.Ability->GetDefaultObject<USEO_GameplayAbility>();
+				FGameplayAbilitySpec specToGrant(ability, GA.AbilityLevel);
+				specToGrant.DynamicAbilityTags.AddTag(GA.InputTag);
+				specToGrant.InputID = UniqueInputID;
+				asc->GiveAbility(specToGrant);
+				UE_LOG(LogTemp, Error, TEXT("giving ability"));
+			}
 
 			UE_LOG(LogTemp, Error, TEXT("give ability success"));
 

@@ -17,8 +17,11 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetWeaponData(UWeaponInstance* WI);
+
+	UFUNCTION(BlueprintCallable)
+	UWeaponInstance* GetWeaponData() const;
 
 	UFUNCTION(BlueprintCallable)
 	void SetMeshOwnerCanSee(bool CanOwnerSee);
@@ -39,7 +42,7 @@ protected:
 	FVector GetMeleeTraceEnd() const;
 
 
-
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USceneComponent> DefaultsSceneRoot;
@@ -58,10 +61,13 @@ protected:
 	TObjectPtr<USceneComponent> ADSCameraPoint;
 	
 	/*Use this to keep the instancce reference when drop weapon*/
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	TObjectPtr<UWeaponInstance> WeaponInstance;
 
 	/*Store the array at the beginplay, later can use to hide or show to owner*/
 	TMap<USkeletalMeshComponent*, TObjectPtr<USkeletalMesh>> skeletalMeshes;
 	TMap<UStaticMeshComponent*, TObjectPtr<UStaticMesh>> staticMeshes;
+
+private:
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 };
