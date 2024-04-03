@@ -35,7 +35,7 @@ void USEO_PlayerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitializeInputContext();
+	//InitializeInputContext();
 	
 	
 	
@@ -203,6 +203,10 @@ void USEO_PlayerComponent::InitializeInputContext_Implementation()
 					InitializeInputBinding(m_Pawn->InputComponent);
 				}
 				
+			}
+			else {
+				USEO_GlobalFunctionLibrary::SEO_Log(m_Pawn, ELogType::Error, "Invalid Controller");
+
 			}
 
 		}

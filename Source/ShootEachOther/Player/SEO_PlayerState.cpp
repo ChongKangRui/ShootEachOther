@@ -8,6 +8,8 @@
 #include "SEO_AttributeSet.h"
 #include "SEO_GlobalFunctionLibrary.h"
 
+#include "Net/UnrealNetwork.h"
+
 
 ASEO_PlayerState::ASEO_PlayerState(const FObjectInitializer& ObjectInitializer)
 {
@@ -31,8 +33,25 @@ void ASEO_PlayerState::BeginPlay()
 
 }
 
+void ASEO_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass, Ready);
+}
+
+bool ASEO_PlayerState::GetIsReady() const
+{
+	return Ready;
+}
+
+void ASEO_PlayerState::SetIsReady_Implementation(const bool IsReady)
+{
+	Ready = IsReady;
+}
+
 void ASEO_PlayerState::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 {
+	UE_LOG(LogTemp, Error, TEXT("What %i"), NewTeamID.GetId());
 	TeamId = NewTeamID;
 }
 
@@ -60,6 +79,11 @@ bool ASEO_PlayerState::AddOwningMoney(const int value)
 {
 	OwningMoney += value;
 	return true;
+}
+
+int32 ASEO_PlayerState::GetTeamID() const
+{
+	return TeamId;
 }
 
 

@@ -25,7 +25,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ability System")
 	USEOAbilitySystemComponent* GetSEOAbilitySystemComponent() const { return AbilitySystemComponent; }
 
+
+
 	/*Team related*/
+	UFUNCTION(BlueprintPure, Category = "Team")
+	bool GetIsReady() const;
+
+	UFUNCTION(BlueprintCallable,Server, Reliable, Category = "Team")
+	void SetIsReady(const bool IsReady);
+
+
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
@@ -38,7 +47,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shop System")
 	bool AddOwningMoney(const int value);
 
-
+	UFUNCTION(BlueprintPure, Category = "Team")
+	int32 GetTeamID() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -52,10 +62,15 @@ protected:
 	FGenericTeamId TeamId;
 
 	int OwningMoney = 2000;
+
+	UPROPERTY(Replicated)
+	bool Ready = false;
 	
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Ability System")
 	TObjectPtr<USEOAbilitySystemComponent> AbilitySystemComponent;
 
+private:
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 };

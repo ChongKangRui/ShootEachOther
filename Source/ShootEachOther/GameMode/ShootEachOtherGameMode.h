@@ -3,14 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
 #include "GenericTeamAgentInterface.h"
+#include "MatchInfo.h"
 #include "ShootEachOtherGameMode.generated.h"
 
-class UMatchInfo;
 
+class AShootEachOtherPlayerController;
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTeamIDAssigned, APlayerController*, PC, int32, ID);
 UCLASS(minimalapi)
-class AShootEachOtherGameMode : public AGameModeBase
+class AShootEachOtherGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
@@ -20,15 +24,27 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void BeginNewRound();
 
+	UFUNCTION(BlueprintPure)
+	int32 GetTeamIDFromTeamEnum(const ETeamType& team) const;
+
+	UFUNCTION(BlueprintPure)
+	ETeamType GetTeamEnumFromID(const int32& genericid) const;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnTeamIDAssigned OnTeamIDAssigned;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostLogin(APlayerController* pc) override;
-
+	
 	void ServerCreateTeam();
 	void AssignTeamToPlayer(APlayerController* pc, int32 TeamId);
 	int32 GetLeastMemberOfTeam() const;
 
-
+	
+protected:
+	UPROPERTY(BlueprintReadOnly)
+	EMatchType MatchType;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -39,7 +55,7 @@ protected:
 	TArray<FGenericTeamId> TeamMatchResultRecord;
 
 private:
-	
+	class ASEO_GameState* gameState;
 
 };
 
