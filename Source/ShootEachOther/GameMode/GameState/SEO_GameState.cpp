@@ -2,16 +2,18 @@
 
 
 #include "SEO_GameState.h"
+#include "SEOGameInstance.h"
 #include "Net/UnrealNetwork.h"
 
 TArray<FTeamInfo> ASEO_GameState::GetTeamsInfo() const
 {
-	return TArray<FTeamInfo>();
+	return TeamInfo;
 }
 
 
 FTeamInfo ASEO_GameState::GetTeamInfo(int TeamID) const
 {
+	
 	for (const FTeamInfo teamInfo : TeamInfo) {
 		if (teamInfo.TeamID == TeamID) {
 			return teamInfo;
@@ -20,12 +22,26 @@ FTeamInfo ASEO_GameState::GetTeamInfo(int TeamID) const
 	return FTeamInfo();
 }
 
+//void ASEO_GameState::AddAIToTeam_Implementation(int32 TeamID, int index)
+//{
+//	for (FTeamInfo& teamInfo : TeamInfo) {
+//		if (teamInfo.TeamID == TeamID) {
+//
+//		}
+//	}
+//}
+
+FMatchSetting ASEO_GameState::GetMatchSetting() const
+{
+	return MatchSetting;
+}
+
 void ASEO_GameState::CreateTeam_Implementation(int32 TeamID)
 {
 	TeamInfo.Add(FTeamInfo(TeamID, 4));
 }
 
-void ASEO_GameState::AddPlayerToTeam_Implementation(APlayerState* ps, int32 TeamID, int index)
+void ASEO_GameState::AddPlayerToTeam_Implementation(ASEO_PlayerState* ps, int32 TeamID, int index)
 {
 	UE_LOG(LogTemp, Error, TEXT("teamid in, %i"), TeamID);
 	for (FTeamInfo& teamInfo : TeamInfo) {
@@ -60,8 +76,24 @@ void ASEO_GameState::AddPlayerToTeam_Implementation(APlayerState* ps, int32 Team
 	}
 }
 
+void ASEO_GameState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority()) {
+		if (GetGameInstance()) {
+			if (USEOGameInstance* GI = Cast<USEOGameInstance>(GetGameInstance())) {
+				MatchSetting = GI->GetMatchSetting();
+			}
+
+		}
+	}
+}
+
 void ASEO_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ThisClass, TeamInfo);
+	DOREPLIFETIME(ThisClass, MatchSetting);
+	
 }

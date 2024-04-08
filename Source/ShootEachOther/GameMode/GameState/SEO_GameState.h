@@ -9,6 +9,8 @@
 /**
  * 
  */
+class ASEO_PlayerState;
+
 USTRUCT(BlueprintType)
 struct FTeamInfo
 {
@@ -19,8 +21,7 @@ public:
 	int32 TeamID;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<APlayerState>> Players;
-
+	TArray<TObjectPtr<ASEO_PlayerState>> Players;
 
 	FLinearColor TeamColor;
 
@@ -33,7 +34,7 @@ public:
 		MemberAmount++;
 	}
 
-	void RemovePlayer(APlayerState* pc) {
+	void RemovePlayer(ASEO_PlayerState* pc) {
 		Players.Remove(pc);
 	}
 
@@ -49,6 +50,35 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	int MemberAmount;
+
+};
+
+UENUM(BlueprintType)
+enum class EMatchType : uint8 {
+	ThreeRoundTwoWin,
+	FiveRoundThreeWin,
+	/*1vs1*/
+	CowBoyDuel,
+	/*No team, everyone is enemy*/
+	OnlyOneSurvive
+};
+
+USTRUCT(BlueprintType)
+struct FMatchSetting {
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool HasFriendlyDamage = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EMatchType MatchType = EMatchType::ThreeRoundTwoWin;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ShoppingTimeBeforeRoundBegin = 15.0f;
+
+	FMatchSetting() {
+
+	}
 };
 
 UCLASS()
@@ -64,15 +94,27 @@ public:
 	FTeamInfo GetTeamInfo(int TeamID) const;
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void AddPlayerToTeam(APlayerState* pc, int32 TeamID, int index = -1);
+	void AddPlayerToTeam(ASEO_PlayerState* pc, int32 TeamID, int index = -1);
+
+	/*UFUNCTION(BlueprintCallable, Server, Reliable)
+	void AddAIToTeam(int32 TeamID, int index = -1);*/
+
+	/*UFUNCTION(BlueprintCallable, Server, Reliable)
+	void RemoveAIFromTeam(int32 TeamID);*/
 
 	UFUNCTION(Server, Reliable)
 	void CreateTeam(int32 TeamID);
+
+	UFUNCTION(BlueprintPure)
+	FMatchSetting GetMatchSetting() const;
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<FTeamInfo> TeamInfo;
 
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	FMatchSetting MatchSetting;
 
 private:
+	void BeginPlay() override;
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

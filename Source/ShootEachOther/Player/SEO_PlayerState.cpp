@@ -8,6 +8,8 @@
 #include "SEO_AttributeSet.h"
 #include "SEO_GlobalFunctionLibrary.h"
 
+#include "GameMode/ShootEachOtherGameMode.h"
+
 #include "Net/UnrealNetwork.h"
 
 
@@ -31,6 +33,11 @@ void ASEO_PlayerState::BeginPlay()
 	Super::BeginPlay();
 	AbilitySystemComponent->AbilityActorInfo.Get()->OwnerActor = this;
 
+	
+	if (AGameModeBase* GM = GetWorld()->GetAuthGameMode()) {
+		sGM = Cast<AShootEachOtherGameMode>(GM);
+	}
+
 }
 
 void ASEO_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -47,6 +54,11 @@ bool ASEO_PlayerState::GetIsReady() const
 void ASEO_PlayerState::SetIsReady_Implementation(const bool IsReady)
 {
 	Ready = IsReady;
+
+	if (Ready) {
+		if (sGM)
+			sGM->BeginNewRound();
+	}
 }
 
 void ASEO_PlayerState::SetGenericTeamId(const FGenericTeamId& NewTeamID)

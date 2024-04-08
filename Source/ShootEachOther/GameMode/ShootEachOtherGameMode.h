@@ -21,7 +21,7 @@ class AShootEachOtherGameMode : public AGameMode
 public:
 	AShootEachOtherGameMode();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintImplementableEvent)
 	void BeginNewRound();
 
 	UFUNCTION(BlueprintPure)
@@ -41,10 +41,6 @@ protected:
 	void AssignTeamToPlayer(APlayerController* pc, int32 TeamId);
 	int32 GetLeastMemberOfTeam() const;
 
-	
-protected:
-	UPROPERTY(BlueprintReadOnly)
-	EMatchType MatchType;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

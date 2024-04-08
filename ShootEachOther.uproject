@@ -13,7 +13,8 @@
 				"GameplayAbilities",
 				"Engine",
 				"CoreUObject",
-				"UMG"
+				"UMG",
+				"ModularGameplay"
 			]
 		}
 	],

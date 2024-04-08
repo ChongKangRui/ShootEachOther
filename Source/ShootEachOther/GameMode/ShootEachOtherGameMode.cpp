@@ -4,7 +4,7 @@
 
 #include "Player/SEO_PlayerState.h"
 #include "UObject/ConstructorHelpers.h"
-#include "Player/SEO_GameState.h"
+#include "GameState/SEO_GameState.h"
 
 AShootEachOtherGameMode::AShootEachOtherGameMode()
 {
@@ -35,8 +35,8 @@ void AShootEachOtherGameMode::ServerCreateTeam()
 	gameState->CreateTeam(GetTeamIDFromTeamEnum(ETeamType::TeamA));
 	gameState->CreateTeam(GetTeamIDFromTeamEnum(ETeamType::TeamB));
 
-	if (MatchInformation) {
-		switch (MatchInformation->MatchType)
+	
+		switch (gameState->GetMatchSetting().MatchType)
 		{
 		case EMatchType::FiveRoundThreeWin:
 			//gameState->CreateTeam(GetTeamIDFromTeamEnum(ETeamType::TeamA));
@@ -47,13 +47,15 @@ void AShootEachOtherGameMode::ServerCreateTeam()
 			break;
 		
 		}
-	}
+	
 }
 
 void AShootEachOtherGameMode::AssignTeamToPlayer(APlayerController* pc, int32 TeamId)
 {
 	if (ASEO_PlayerState* ps = pc->GetPlayerState<ASEO_PlayerState>()) {
 		ps->SetGenericTeamId(FGenericTeamId(TeamId));
+
+
 		gameState->AddPlayerToTeam(ps, TeamId);
 		OnTeamIDAssigned.Broadcast(pc, TeamId);
 	}
@@ -83,11 +85,6 @@ int32 AShootEachOtherGameMode::GetLeastMemberOfTeam() const
 	}
 	
 	return -1;
-	
-}
-
-void AShootEachOtherGameMode::BeginNewRound()
-{
 	
 }
 

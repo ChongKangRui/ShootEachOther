@@ -70,6 +70,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Ability System")
 	TObjectPtr<USEOAbilitySystemComponent> AbilitySystemComponent;
 
+	 TObjectPtr<class AShootEachOtherGameMode> sGM;
 private:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	

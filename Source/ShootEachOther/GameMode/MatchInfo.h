@@ -9,15 +9,7 @@
 /**
  * 
  */
-UENUM(BlueprintType)
-enum class EMatchType : uint8 {
-	ThreeRoundTwoWin,
-	FiveRoundThreeWin,
-	/*1vs1*/
-	CowBoyDuel,
-	/*No team, everyone is enemy*/
-	Chaostic
-};
+
 
 UENUM(BlueprintType)
 enum class ETeamType : uint8 {
@@ -33,18 +25,18 @@ class SHOOTEACHOTHER_API UMatchInfo : public UDataAsset
 
 public:
 
-	UPROPERTY(EditDefaultsOnly)
-	EMatchType MatchType;
+	//UPROPERTY(EditDefaultsOnly)
+	//EMatchType MatchType;
 
-	/*Move the linear color later to a struct if necessary*/
-	UPROPERTY(EditDefaultsOnly)
-	TMap<ETeamType, FLinearColor> TeamMeshColor;
+	///*Move the linear color later to a struct if necessary*/
+	//UPROPERTY(EditDefaultsOnly)
+	//TMap<ETeamType, FLinearColor> TeamMeshColor;
 
-	UPROPERTY(EditDefaultsOnly)
-	float ShoppingTimeBeforeRoundBegin = 15.0f;
+	//UPROPERTY(EditDefaultsOnly)
+	//float ShoppingTimeBeforeRoundBegin = 15.0f;
 
-	/*Determine whether player can change team, do some modification before match actually start*/
-	UPROPERTY(EditDefaultsOnly)
-	bool HasReadyState = true;
+	///*Determine whether player can change team, do some modification before match actually start*/
+	//UPROPERTY(EditDefaultsOnly)
+	//bool HasReadyState = true;
 
 };
