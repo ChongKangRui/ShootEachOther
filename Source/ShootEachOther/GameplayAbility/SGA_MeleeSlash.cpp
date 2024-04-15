@@ -2,7 +2,6 @@
 
 
 #include "GameplayAbility/SGA_MeleeSlash.h"
-#include "SEO_GlobalFunctionLibrary.h"
 #include "GameplayTagCollection.h"
 
 #include "Character/ShootEachOtherCharacter.h"
@@ -12,8 +11,13 @@
 #include "Weapon/WeaponBase.h"
 #include "Weapon/WeaponData.h"
 
+#include "GameMode/GameState/SEO_GameState.h"
+
+
+
 void USGA_MeleeSlash::MeleeTrace()
 {
+
 	if (const UWeaponInstance* wi = GetEquippedWeaponInstance()) {
 		if (const AShootEachOtherCharacter* owner = GetSEOCharacter()) {
 			FWeaponData data = wi->GetDefaultsWeaponData();
@@ -65,9 +69,3 @@ void USGA_MeleeSlash::MeleeTrace()
 	}
 }
 
-void USGA_MeleeSlash::ApplyDamageToTarget_Implementation(const float Damage, AActor* HitActor)
-{
-	/*Apply damage gameplay effect to target*/
-	USEO_GlobalFunctionLibrary::ApplyDamageToTarget(Damage, DamageGE, GetAvatarActorFromActorInfo(), HitActor);
-
-}

@@ -163,12 +163,6 @@ void USGA_Shoot::OnWeaponFired_MultiCast_Implementation(const TArray<FHitResult>
 	OnWeaponFired(HitResult);
 }
 
-void USGA_Shoot::ApplyDamageToTarget_Implementation(const float Damage,AActor* HitActor)
-{
-	/*Apply damage gameplay effect to target*/
-	USEO_GlobalFunctionLibrary::ApplyDamageToTarget(Damage, DamageGE, GetAvatarActorFromActorInfo(), HitActor);
-	
-}
 
 FVector USGA_Shoot::GetTraceStart(const ETraceSourceType& type) const
 {

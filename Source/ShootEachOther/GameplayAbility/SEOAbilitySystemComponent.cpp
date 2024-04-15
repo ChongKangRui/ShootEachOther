@@ -121,6 +121,7 @@ void USEOAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 		{
 			if (AbilitySpec.Ability && (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)))
 			{
+				//UE_LOG(LogTemp, Display, TEXT("Input pressed!!!!!!!!!!!!!"));
 				InputPressedSpecHandles.AddUnique(AbilitySpec.Handle);
 				InputHeldSpecHandles.AddUnique(AbilitySpec.Handle);
 			}

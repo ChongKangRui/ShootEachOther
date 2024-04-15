@@ -9,6 +9,9 @@
 
 #include "GameplayTagCollection.h"
 
+#include "GameMode/GameState/SEO_GameState.h"
+#include "SEO_GlobalFunctionLibrary.h"
+
 const UWeaponInstance* USEO_GameplayAbility::GetEquippedWeaponInstance() const
 {
 	if (const UWeaponInventoryComponent* wic = GetWeaponInventoryComponent()) {
@@ -58,4 +61,28 @@ USEOAbilitySystemComponent* USEO_GameplayAbility::GetSEOAbilitySystemComponent()
 {
 	
 	return (CurrentActorInfo ? Cast<USEOAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get()) : nullptr);;
+}
+
+const ASEO_GameState* USEO_GameplayAbility::GetSEOGameState() const
+{
+	if (GetWorld()) {
+		if (const AGameModeBase* gm = GetWorld()->GetAuthGameMode()) {
+			if (const ASEO_GameState* gs = gm->GetGameState<ASEO_GameState>()) {
+				return gs;
+			}
+		}
+	}
+	return nullptr;
+}
+
+void USEO_GameplayAbility::ApplyDamageToTarget_Implementation(const float Damage, AActor* HitActor)
+{
+	/*Apply damage gameplay effect to target*/
+
+	bool HasFriendlyDamage = false;
+	if (GetSEOGameState()) {
+		HasFriendlyDamage = GetSEOGameState()->GetMatchSetting().HasFriendlyDamage;
+	}
+	USEO_GlobalFunctionLibrary::ApplyDamageToTarget(Damage, DamageGE, GetAvatarActorFromActorInfo(), HitActor, HasFriendlyDamage);
+
 }

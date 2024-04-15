@@ -10,6 +10,7 @@
  * 
  */
 class ASEO_PlayerState;
+class UBotSpawnComponent;
 
 USTRUCT(BlueprintType)
 struct FTeamInfo
@@ -51,6 +52,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	int MemberAmount;
 
+
 };
 
 UENUM(BlueprintType)
@@ -87,6 +89,8 @@ class SHOOTEACHOTHER_API ASEO_GameState : public AGameState
 	GENERATED_BODY()
 	
 public:
+	ASEO_GameState();
+
 	UFUNCTION(BlueprintCallable)
 	TArray<FTeamInfo> GetTeamsInfo() const;
 
@@ -95,12 +99,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void AddPlayerToTeam(ASEO_PlayerState* pc, int32 TeamID, int index = -1);
-
-	/*UFUNCTION(BlueprintCallable, Server, Reliable)
-	void AddAIToTeam(int32 TeamID, int index = -1);*/
-
-	/*UFUNCTION(BlueprintCallable, Server, Reliable)
-	void RemoveAIFromTeam(int32 TeamID);*/
 
 	UFUNCTION(Server, Reliable)
 	void CreateTeam(int32 TeamID);

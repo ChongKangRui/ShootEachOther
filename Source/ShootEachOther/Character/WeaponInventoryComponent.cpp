@@ -9,7 +9,6 @@
 #include "Weapon/WeaponInstance.h"
 #include "Weapon/WeaponBase.h"
 #include "GameplayAbility/SEOAbilitySystemComponent.h"
-#include "Player/ShootEachOtherPlayerController.h"
 #include "SEO_GlobalFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayTagCollection.h"
@@ -121,40 +120,35 @@ void UWeaponInventoryComponent::SwitchCurrentWeapon_Implementation(UWeaponInstan
 {
 
 	if (AShootEachOtherCharacter* pawn = Cast<AShootEachOtherCharacter>(GetOwner())) {
-		USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "tryinh to switch current weapon");
-		if (const AShootEachOtherPlayerController* controller = Cast<AShootEachOtherPlayerController>(pawn->Controller)) {
-			if (USEOAbilitySystemComponent* asc = controller->GetSEOAbilitySystemComponent()) {
+		if (USEOAbilitySystemComponent* asc = pawn->GetSEOAbilitySystemComponent()) {
 
-				if (!ReplacementInstance) {
-					USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Invalid replacement weapon instance reference");
-					return;
-				}
-
-				if (ToReplace) {
-					ToReplace->ClearAbilityFromASC(asc);
-					AttachedWeapon->Destroy();
-				}
-				if (UseBlueprintBindFunction) {
-					OnWeaponChanged_Multicast(true, ReplacementInstance);
-				}
-				else {
-					if (pawn->HasAuthority()) {
-						USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Set weapon Success");
-						AttachedWeapon = ReplacementInstance->InitializeForWeapon(asc, pawn);
-					}
-				}
-
-				/*Make sure activating slot is alway the correct slot*/
-				ActivatingSlot = ReplacementInstance->GetDefaultsWeaponData().EWeaponSlotType;
+			if (!ReplacementInstance) {
+				USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Invalid replacement weapon instance reference");
+				return;
 			}
-			else
-				USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Invalid asc");
+
+			if (ToReplace) {
+				ToReplace->ClearAbilityFromASC(asc);
+				AttachedWeapon->Destroy();
+			}
+			if (UseBlueprintBindFunction) {
+				OnWeaponChanged_Multicast(true, ReplacementInstance);
+			}
+			else {
+				if (pawn->HasAuthority()) {
+					USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Info, "Set weapon Success");
+					AttachedWeapon = ReplacementInstance->InitializeForWeapon(asc, pawn);
+				}
+			}
+
+			/*Make sure activating slot is alway the correct slot*/
+			ActivatingSlot = ReplacementInstance->GetDefaultsWeaponData().EWeaponSlotType;
 		}
 		else
-			USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Invalid controller");
+			USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Invalid asc");
 	}
-	else
-		USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Error, "Invalid controller");
+
+
 }
 #pragma region Getter Function
 
@@ -182,7 +176,7 @@ const UWeaponInstance* UWeaponInventoryComponent::FindWeaponBySlot(EWeaponSlotTy
 
 void UWeaponInventoryComponent::OnRep_SlotData()
 {
-	UE_LOG(LogTemp, Error, TEXT("Replicccccccccccccc"));
+	//UE_LOG(LogTemp, Error, TEXT("Replicccccccccccccc"));
 }
 
 

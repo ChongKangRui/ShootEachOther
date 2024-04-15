@@ -55,7 +55,6 @@ void AShootEachOtherGameMode::AssignTeamToPlayer(APlayerController* pc, int32 Te
 	if (ASEO_PlayerState* ps = pc->GetPlayerState<ASEO_PlayerState>()) {
 		ps->SetGenericTeamId(FGenericTeamId(TeamId));
 
-
 		gameState->AddPlayerToTeam(ps, TeamId);
 		OnTeamIDAssigned.Broadcast(pc, TeamId);
 	}

@@ -5,6 +5,11 @@
 #include "SEOGameInstance.h"
 #include "Net/UnrealNetwork.h"
 
+ASEO_GameState::ASEO_GameState()
+{
+
+}
+
 TArray<FTeamInfo> ASEO_GameState::GetTeamsInfo() const
 {
 	return TeamInfo;
@@ -53,7 +58,6 @@ void ASEO_GameState::AddPlayerToTeam_Implementation(ASEO_PlayerState* ps, int32 
 						if (!teamInfo.Players[i]) {
 							teamInfo.Players[i] = ps;
 							teamInfo.AddMemberAmount();
-							UE_LOG(LogTemp, Error, TEXT("add ps success 01"));
 							return;
 						}
 					}
@@ -61,16 +65,15 @@ void ASEO_GameState::AddPlayerToTeam_Implementation(ASEO_PlayerState* ps, int32 
 				else {
 					teamInfo.Players[index] = ps;
 					teamInfo.AddMemberAmount();
-					UE_LOG(LogTemp, Error, TEXT("add ps success 02"));
 				}
 
 			}
 			else {
-				UE_LOG(LogTemp, Error, TEXT("Contain ps"));
+				UE_LOG(LogTemp, Error, TEXT("Already Contain Player"));
 			}
 		}
 		else {
-			UE_LOG(LogTemp, Error, TEXT("not team id"));
+			UE_LOG(LogTemp, Error, TEXT("not valid team id"));
 		}
 		
 	}

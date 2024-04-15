@@ -14,7 +14,8 @@
 				"Engine",
 				"CoreUObject",
 				"UMG",
-				"ModularGameplay"
+				"ModularGameplay",
+				"AIModule"
 			]
 		}
 	],

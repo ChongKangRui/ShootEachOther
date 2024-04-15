@@ -15,9 +15,7 @@ class SHOOTEACHOTHER_API USGA_MeleeSlash : public USEO_GameplayAbility
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	TSubclassOf<UGameplayEffect> DamageGE;
-
+	
 	UFUNCTION(BlueprintCallable)
 	void MeleeTrace();
 
@@ -30,7 +28,4 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Debug")
 	float LineThickness = 1.0f;
 	
-private:
-	UFUNCTION(Server, Reliable)
-	void ApplyDamageToTarget(const float Damage, AActor* HitActor);
 };

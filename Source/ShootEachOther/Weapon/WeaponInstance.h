@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameplayTagStack.h"
 #include "WeaponData.h"
+#include "Character/ShootEachOtherCharacter.h"
 #include "WeaponInstance.generated.h"
 
 /**
  * 
  */
-class AShootEachOtherCharacter;
 class USEOAbilitySystemComponent;
 
 

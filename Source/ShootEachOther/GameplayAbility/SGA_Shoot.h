@@ -28,9 +28,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Debug")
 	float LineThickness = 1.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	TSubclassOf<UGameplayEffect> DamageGE;
-
 
 public:
 
@@ -49,8 +46,6 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void OnWeaponFired_MultiCast(const TArray<FHitResult>& HitResult);
 
-	UFUNCTION(Server, Reliable)
-	void ApplyDamageToTarget(const float Damage, AActor* HitActor);
 
 
 	FVector GetTraceStart(const ETraceSourceType& type) const;

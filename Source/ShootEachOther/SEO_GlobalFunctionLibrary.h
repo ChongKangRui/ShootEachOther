@@ -28,5 +28,5 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void SEO_Log(const AActor* actor, const ELogType type ,FString message);
 	UFUNCTION(BlueprintCallable)
-	static void ApplyDamageToTarget(const float Damage, TSubclassOf<UGameplayEffect> DamageGE,AActor* Causer, AActor* HitActor);
+	static void ApplyDamageToTarget(const float Damage, TSubclassOf<UGameplayEffect> DamageGE,AActor* Causer, AActor* HitActor, bool HasFriendlyFire);
 };

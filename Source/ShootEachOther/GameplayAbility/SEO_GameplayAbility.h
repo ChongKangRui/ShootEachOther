@@ -9,11 +9,13 @@
 /**
  * 
  */
+class ASEO_GameState;
 class UWeaponInstance;
 class UWeaponInventoryComponent;
 class USEO_PlayerComponent;
 class AShootEachOtherCharacter;
 class USEOAbilitySystemComponent;
+
 
 UENUM(BlueprintType)
 enum class EAbilityActivationPolicy : uint8 {
@@ -46,14 +48,20 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SEO|Ability")
 	USEOAbilitySystemComponent* GetSEOAbilitySystemComponent() const;
 
+	UFUNCTION(BlueprintPure, Category = "SEO|Ability")
+	const ASEO_GameState* GetSEOGameState() const;
+
 	EAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; };
 
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	TSubclassOf<UGameplayEffect> DamageGE;
 
 
 protected:
 	UWeaponInstance* GetEquippedWeaponInstance();
 	
-
+	UFUNCTION(Server, Reliable)
+	void ApplyDamageToTarget(const float Damage, AActor* HitActor);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAbilityActivationPolicy ActivationPolicy;

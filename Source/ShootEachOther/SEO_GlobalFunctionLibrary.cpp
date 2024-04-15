@@ -11,6 +11,10 @@
 #include "Weapon/WeaponBase.h"
 #include "Weapon/WeaponData.h"
 
+#include "Player/SEO_PlayerState.h"
+
+
+
 
 
 void USEO_GlobalFunctionLibrary::SEO_Log(const AActor* actor, const ELogType type, FString message)
@@ -44,12 +48,13 @@ void USEO_GlobalFunctionLibrary::SEO_Log(const AActor* actor, const ELogType typ
 }
 
 
-void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubclassOf<UGameplayEffect> DamageGE, AActor* Causer, AActor* HitActor)
+void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubclassOf<UGameplayEffect> DamageGE, AActor* Causer, AActor* HitActor, bool HasFriendlyFire)
 {
 	/*Apply damage gameplay effect to target*/
+
 	if (HitActor) {
-		AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
-		AShootEachOtherCharacter* DamageSource = Cast<AShootEachOtherCharacter>(Causer);
+		const AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
+		const AShootEachOtherCharacter* DamageSource = Cast<AShootEachOtherCharacter>(Causer);
 		if (!Target || !DamageSource) {
 			USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Invalid Damage Target/Causer");
 			return;
@@ -61,11 +66,19 @@ void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubcla
 			USEOAbilitySystemComponent* asc = DamageSource->GetSEOAbilitySystemComponent();
 			FGameplayEffectSpecHandle DamageEffectHandle = asc->MakeOutgoingSpec(DamageGE, 1,asc->MakeEffectContext());
 
+			
+			if (!HasFriendlyFire) {
+				if (Target->GetSEOPlayerState()->GetGenericTeamId() == DamageSource->GetSEOPlayerState()->GetGenericTeamId()) {
+					USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Is the same id");
+					return;
+				}
+			}
+
 			if (DamageEffectHandle.IsValid() && asc) {
 				//We wan to set the damage during runtime based on weapon data from datatable.
 				FGameplayEffectSpec& spec = *DamageEffectHandle.Data.Get();
 				spec.SetSetByCallerMagnitude(GameplayTagsCollection::WeaponDamage, -Damage);
-				USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Apply Damage");
+				//USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Apply Damage");
 				//Finally we apply gameplay effect to target
 				asc->ApplyGameplayEffectSpecToTarget(spec, TargetASC);
 				return;
