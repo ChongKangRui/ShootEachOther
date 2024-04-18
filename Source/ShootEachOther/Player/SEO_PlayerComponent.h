@@ -7,7 +7,7 @@
 #include "GameplayTagCollection.h"
 #include "SEO_PlayerComponent.generated.h"
 
-class AShootEachOtherPlayerController;
+
 class USEO_AttributeSet;
 class USEOAbilitySystemComponent;
 //class UInputConfig;
@@ -62,7 +62,7 @@ protected:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void InitializeInputContext();
 
-	friend AShootEachOtherPlayerController;
+	friend class AShootEachOtherPlayerController;
 
 
 	

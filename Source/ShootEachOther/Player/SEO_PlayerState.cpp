@@ -2,7 +2,7 @@
 
 
 #include "SEO_PlayerState.h"
-#include "GameplayAbility/SEOAbilitySystemComponent.h"
+//#include "GameplayAbility/SEOAbilitySystemComponent.h"
 
 #include "Player/SEO_PlayerComponent.h"
 #include "SEO_AttributeSet.h"

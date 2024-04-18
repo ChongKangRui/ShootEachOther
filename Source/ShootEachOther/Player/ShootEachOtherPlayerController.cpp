@@ -61,7 +61,7 @@ void AShootEachOtherPlayerController::OnPossess(APawn* PawnToProcess)
 void AShootEachOtherPlayerController::PostProcessInput(const float DeltaTime, const bool bGamePaused)
 {
 	if (USEOAbilitySystemComponent* asc = GetSEOAbilitySystemComponent()) {
-		asc->ProcessAllAbility(DeltaTime, bGamePaused);
+		asc->ProcessAllAbility(DeltaTime);
 	}
 	Super::PostProcessInput(DeltaTime, bGamePaused);
 }

@@ -17,7 +17,7 @@ class SHOOTEACHOTHER_API USEOAbilitySystemComponent : public UAbilitySystemCompo
 public:
 	USEOAbilitySystemComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	void ProcessAllAbility(float DeltaTime, bool bGamePaused);
+	void ProcessAllAbility(float DeltaTime);
 	void ClearAbilityInput();
 
 	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;

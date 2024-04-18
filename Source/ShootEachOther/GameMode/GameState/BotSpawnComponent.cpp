@@ -98,7 +98,7 @@ void UBotSpawnComponent::AddOneBot(const int32 TeamID, const int Index)
 			UE_LOG(LogTemp, Error, TEXT("Add Bot Success"));
 		}
 	}
-
+	
 }
 
 void UBotSpawnComponent::RemoveBot(const int32 TeamID, const int Index)

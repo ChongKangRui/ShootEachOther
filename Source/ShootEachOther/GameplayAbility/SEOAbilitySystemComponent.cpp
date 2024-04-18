@@ -13,7 +13,7 @@ USEOAbilitySystemComponent::USEOAbilitySystemComponent(const FObjectInitializer&
 	InputReleasedSpecHandles.Reset();
 }
 
-void USEOAbilitySystemComponent::ProcessAllAbility(float DeltaTime, bool bGamePaused)
+void USEOAbilitySystemComponent::ProcessAllAbility(float DeltaTime)
 {
 	if (HasMatchingGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked))
 	{
@@ -57,6 +57,7 @@ void USEOAbilitySystemComponent::ProcessAllAbility(float DeltaTime, bool bGamePa
 	}
 	
 	for (const FGameplayAbilitySpecHandle& ability : AbilityToActivate) {
+		UE_LOG(LogTemp, Error, TEXT("has ability to activate"));
 		TryActivateAbility(ability);
 	}
 
@@ -121,7 +122,7 @@ void USEOAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 		{
 			if (AbilitySpec.Ability && (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)))
 			{
-				//UE_LOG(LogTemp, Display, TEXT("Input pressed!!!!!!!!!!!!!"));
+				UE_LOG(LogTemp, Display, TEXT("Input pressed!!!!!!!!!!!!!"));
 				InputPressedSpecHandles.AddUnique(AbilitySpec.Handle);
 				InputHeldSpecHandles.AddUnique(AbilitySpec.Handle);
 			}

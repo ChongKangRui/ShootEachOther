@@ -6,10 +6,11 @@
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
 #include "GenericTeamAgentInterface.h"
+#include "GameplayAbility/SEOAbilitySystemComponent.h"
 #include "SEO_PlayerState.generated.h"
 
 
-class USEOAbilitySystemComponent;
+//class USEOAbilitySystemComponent;
 
 UCLASS()
 class SHOOTEACHOTHER_API ASEO_PlayerState : public APlayerState, public IAbilitySystemInterface, public IGenericTeamAgentInterface

@@ -59,9 +59,11 @@ void USEO_PlayerComponent::InitializeInputBinding(UInputComponent* IC)
 	if (const USEOPawnData* Data = PawnData) {
 		if (const UInputConfig* Config = Data->InputSet) {
 			if (USEO_EnhancedInputComponent* EIC = Cast<USEO_EnhancedInputComponent>(IC)) {
+
+				
 				EIC->BindNativeAction(Config, GameplayTagsCollection::Input_Move, ETriggerEvent::Triggered, this, &USEO_PlayerComponent::Input_Move, true);
 				EIC->BindNativeAction(Config, GameplayTagsCollection::Input_Look, ETriggerEvent::Triggered, this, &USEO_PlayerComponent::Input_Look, true);
-
+				
 				TArray<uint32> Handle;
 				EIC->BindAbilityActions(Config, this, &USEO_PlayerComponent::Input_AbilityTagPressed, &USEO_PlayerComponent::Input_AbilityTagReleased, Handle);
 				USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Info, "Successfully Binditttttttttttttttttt");
