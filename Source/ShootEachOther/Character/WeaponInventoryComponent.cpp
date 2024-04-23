@@ -65,55 +65,33 @@ void UWeaponInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(ThisClass, ActivatingSlot);
 	DOREPLIFETIME(ThisClass, WeaponSlotData);
 	DOREPLIFETIME(ThisClass, AttachedWeapon);
-	DOREPLIFETIME(ThisClass, testWeaponInstance);
 	
-
 }
 
 void UWeaponInventoryComponent::SwapWeaponInstance(const EWeaponSlotType ReplacementWeaponSlot, UWeaponInstance* Replacement)
 {
 	if (Replacement) {
 
-		
+		bool ShouldSwapToCurrentWeapon = (ReplacementWeaponSlot == ActivatingSlot);
 
-		bool ShouldSwapToCurrentWeapon = ReplacementWeaponSlot == ActivatingSlot;
-		/*Swap weapon for activating slot*/
-		if (ShouldSwapToCurrentWeapon) {
-
-			UWeaponInstance* pwi = FindWeaponBySlot(ActivatingSlot);
-			SwitchCurrentWeapon(Replacement, pwi, false);
-			return;
-
-		}
-		/*Swap weapon for non activating slot, so can just simply replace the reference with new weapon data*/
-		else {
-			
-				// Find the index of the element to remove
-				//for (int32 Index = 0; Index < WeaponSlotData.Num(); ++Index) {
-				//	if (WeaponSlotData[Index]->GetDefaultsWeaponData().EWeaponSlotType == ReplacementWeaponSlot) {
-				//		
-				//		WeaponSlotData[Index] = Replacement;
-				//		return;
-				//	}
-				//}
-				//WeaponSlotData.AddUnique(Replacement);
-				testWeaponInstance = Replacement;
-				for (FWeaponSlot& ws : WeaponSlotData) {
-					if (ws.SlotType == ReplacementWeaponSlot) {
-						ws.WeaponInstance = Replacement;
-						return;
-					}
+		for (FWeaponSlot& ws : WeaponSlotData) {
+			if (ws.SlotType == ReplacementWeaponSlot) {
+				if (ShouldSwapToCurrentWeapon) {
+					UWeaponInstance* pwi = FindWeaponBySlot(ActivatingSlot);
+					SwitchCurrentWeapon(Replacement, pwi, false);
 				}
+				ws.WeaponInstance = Replacement;
+				break;
+				
+			}
 		}
+
+		
 
 	}
 	USEO_GlobalFunctionLibrary::SEO_Log(GetOwner(), ELogType::Error, "SwapWeapon UnSuccess");
 }
 
-void UWeaponInventoryComponent::SetAttachedWeapon_Server_Implementation(AWeaponBase* passinWeapon)
-{
-	AttachedWeapon = passinWeapon;
-}
 
 
 void UWeaponInventoryComponent::SwitchCurrentWeapon_Implementation(UWeaponInstance* ReplacementInstance, UWeaponInstance* ToReplace, bool UseBlueprintBindFunction)
@@ -135,10 +113,9 @@ void UWeaponInventoryComponent::SwitchCurrentWeapon_Implementation(UWeaponInstan
 				OnWeaponChanged_Multicast(true, ReplacementInstance);
 			}
 			else {
-				if (pawn->HasAuthority()) {
-					USEO_GlobalFunctionLibrary::SEO_Log(pawn, ELogType::Info, "Set weapon Success");
-					AttachedWeapon = ReplacementInstance->InitializeForWeapon(asc, pawn);
-				}
+				
+				AttachedWeapon = ReplacementInstance->InitializeForWeapon(asc, pawn);
+				
 			}
 
 			/*Make sure activating slot is alway the correct slot*/
@@ -301,7 +278,7 @@ void UWeaponInventoryComponent::SetCurrentWeaponSlot_Implementation(const EWeapo
 		OnWeaponChanged_Multicast(false, nullptr);
 		return;
 	}
-	
+	UE_LOG(LogTemp, Warning, TEXT("switch current weapon slot?"));
 	SwitchCurrentWeapon(wi, FindWeaponBySlot(ActivatingSlot), UseBlueprintBindFunction);
 }
 

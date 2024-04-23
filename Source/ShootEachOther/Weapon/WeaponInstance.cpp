@@ -24,9 +24,24 @@ void UWeaponInstance::InitializeWeaponInstance(const EWeaponType& type, const FW
 	DefaultsData = Data;
 	WeaponType = type;
 	{
-		FGuid UniqueGuid;
-		FPlatformMisc::CreateGuid(UniqueGuid);
-		UniqueInputID = UniqueGuid.A;
+		int32 id = -1;
+		switch (DefaultsData.EWeaponSlotType) {
+		case EWeaponSlotType::Primary:
+			id = 0;
+			break;
+		case EWeaponSlotType::Secondary:
+			id = 1;
+			break;
+		case EWeaponSlotType::Melee:
+			id = 2;
+			break;
+		case EWeaponSlotType::Grenade:
+			id = 3;
+			break;
+
+		}
+		
+		UniqueInputID = id;
 	}
 
 	//Grant Stat Value
@@ -76,18 +91,23 @@ void UWeaponInstance::GiveAbilityToASC(USEOAbilitySystemComponent* asc)
 				specToGrant.DynamicAbilityTags.AddTag(GA.InputTag);
 				specToGrant.InputID = UniqueInputID;
 				asc->GiveAbility(specToGrant);
-				UE_LOG(LogTemp, Error, TEXT("giving ability"));
+
+				UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
+				FString str = EnumPtr->GetNameStringByValue((int64)WeaponType);
+				UE_LOG(LogTemp, Error, TEXT("giving ability at weapon: %s"), *str);
 			}
 
-			UE_LOG(LogTemp, Error, TEXT("give ability success"));
-
 		}
+		UE_LOG(LogTemp, Error, TEXT("give ability success"));
 	}
 }
 
 void UWeaponInstance::ClearAbilityFromASC(USEOAbilitySystemComponent* asc)
 {
+
 	asc->ClearAllAbilitiesWithInputID(UniqueInputID);
+	UE_LOG(LogTemp, Error, TEXT("clear Unique input id = %i"), UniqueInputID);
+	//
 	
 }
 

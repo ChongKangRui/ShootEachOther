@@ -33,10 +33,7 @@ AAIBotController::AAIBotController()
 	MyPerceptionComponent->ConfigureSense(*SightConfig);
 	MyPerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 
-	//BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
-
-	// Initialize behavior tree component
-	//BehaviorTreeComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComp"));
+	
 }
 
 void AAIBotController::OnPossess(APawn* PawnToProcess)
@@ -73,17 +70,7 @@ void AAIBotController::OnPossess(APawn* PawnToProcess)
 
 	//Add Perception Updated function
 	MyPerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AAIBotController::OnPerceptionUpdated);
-
-	/*if (BehaviorTreeComp && BehaviorTreeComp->GetBlackboardComponent())
-	{
-		BehaviorTreeComp->GetBlackboardComponent()->InitializeBlackboard(*(BehaviorTreeComp->GetCurrentTree()->BlackboardAsset));
-	}*/
-
-	//BehaviorTreeComp->StartLogic();
-	//BehaviorTreeComp->CacheBlackboardComponent(BlackboardComp);
-	//BlackboardComp->InitializeBlackboard(*BlackboardComp->GetBlackboardAsset());
 	
-
 }
 
 void AAIBotController::BeginPlay()
@@ -132,11 +119,10 @@ void AAIBotController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	{
 		if (Actor && Actor->IsA<ACharacter>())
 		{
-			
-				UE_LOG(LogTemp, Error, TEXT("%s"), *Actor->GetName());
-				// The AI character sees the player
-				// Implement logic to react to player detection
-				// For example, set the player as an enemy
+			if (!GetBlackboardComponent()->GetValueAsObject("Target")) {
+				GetBlackboardComponent()->SetValueAsObject("Target", Actor);
+			}
+				
 			
 			
 			

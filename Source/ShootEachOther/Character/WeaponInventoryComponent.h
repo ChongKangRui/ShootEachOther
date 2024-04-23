@@ -85,30 +85,7 @@ public:
 	UFUNCTION(BlueprintCallable,Server, Reliable, Category = "Weapon Slot Component")
 	void SetCurrentWeaponSlot(const EWeaponSlotType WeaponSlot, bool UseBlueprintBindFunction = false);
 
-	///*Use this to get weapon ammo size/count etc, -1 mean it is invalid*/
-	//UFUNCTION(BlueprintPure, Category = "Weapon Slot Component")
-	//int32 GetWeaponStatCount(const EWeaponSlotType WeaponSlot, const FGameplayTag StatTag) const;
-
-	///*Use this to get weapon ammo size/count etc, -1 mean it is invalid*/
-	//UFUNCTION(BlueprintPure, Category = "Weapon Slot Component")
-	//int32 GetCurrentWeaponStatCount(const FGameplayTag StatTag) const;
-
-	///*Use this to add specific stat count*/
-	//UFUNCTION(BlueprintCallable, Category = "Weapon Slot Component")
-	//void AddWeaponStatCount(const EWeaponSlotType WeaponSlot, const FGameplayTag StatTag, const int32 value);
-
-	///*Use this to add current stat count*/
-	//UFUNCTION(BlueprintCallable, Category = "Weapon Slot Component")
-	//void AddCurrentWeaponStatCount(const FGameplayTag StatTag, const int32 value);
-
-	///*Use this to deduct specific stat count*/
-	//UFUNCTION(BlueprintCallable, Category = "Weapon Slot Component")
-	//void RemoveWeaponStatCount(const EWeaponSlotType WeaponSlot, const FGameplayTag StatTag, const int32 value);
-
-	///*Use this to deduct current stat count*/
-	//UFUNCTION(BlueprintCallable, Category = "Weapon Slot Component")
-	//void RemoveCurrentWeaponStatCount(const FGameplayTag StatTag, const int32 value);
-
+	
 	UFUNCTION(BlueprintPure, Category = "Weapon Slot Component")
 	const UWeaponInstance* FindWeaponBySlot(EWeaponSlotType type) const;
 
@@ -131,8 +108,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	EWeaponSlotType ActivatingSlot;
-	UPROPERTY(BlueprintReadOnly, Replicated)
-	TObjectPtr<UWeaponInstance> testWeaponInstance;
+	
 
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* WeaponDataTable;
@@ -152,8 +128,8 @@ protected:
 	//UFUNCTION(Server, Reliable)
 	void SwapWeaponInstance(const EWeaponSlotType ReplacementWeaponSlot, UWeaponInstance* Replacement);
 
-	UFUNCTION(Server, Reliable)
-	void SetAttachedWeapon_Server(AWeaponBase* passinWeapon);
+	//UFUNCTION(Server, Reliable)
+	//void SetAttachedWeapon_Server(AWeaponBase* passinWeapon);
 	//UFUNCTION(Server, Reliable, Category = "Weapon Slot Component")
 	//void SwitchCurrentWeapon_Server(UWeaponInstance* ReplacementInstance, UWeaponInstance* ToReplace, bool UseBlueprintBindFunction);
 	//
