@@ -2,19 +2,38 @@
 
 
 #include "SEO_GameState.h"
-#include "SEOGameInstance.h"
+#include "Player/SEOGameInstance.h"
 #include "Net/UnrealNetwork.h"
 
 ASEO_GameState::ASEO_GameState()
 {
+}
 
+void ASEO_GameState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority()) {
+		/*Game instance will store match setting at the Host main menu when host create the match*/
+		if (GetGameInstance()) {
+			if (USEOGameInstance* GI = Cast<USEOGameInstance>(GetGameInstance())) {
+				MatchSetting = GI->GetMatchSetting();
+			}
+		}
+	}
+}
+
+void ASEO_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass, TeamInfo);
+	DOREPLIFETIME(ThisClass, MatchSetting);
 }
 
 TArray<FTeamInfo> ASEO_GameState::GetTeamsInfo() const
 {
 	return TeamInfo;
 }
-
 
 FTeamInfo ASEO_GameState::GetTeamInfo(int TeamID) const
 {
@@ -26,15 +45,6 @@ FTeamInfo ASEO_GameState::GetTeamInfo(int TeamID) const
 	}
 	return FTeamInfo();
 }
-
-//void ASEO_GameState::AddAIToTeam_Implementation(int32 TeamID, int index)
-//{
-//	for (FTeamInfo& teamInfo : TeamInfo) {
-//		if (teamInfo.TeamID == TeamID) {
-//
-//		}
-//	}
-//}
 
 FMatchSetting ASEO_GameState::GetMatchSetting() const
 {
@@ -79,24 +89,3 @@ void ASEO_GameState::AddPlayerToTeam_Implementation(ASEO_PlayerState* ps, int32 
 	}
 }
 
-void ASEO_GameState::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (HasAuthority()) {
-		if (GetGameInstance()) {
-			if (USEOGameInstance* GI = Cast<USEOGameInstance>(GetGameInstance())) {
-				MatchSetting = GI->GetMatchSetting();
-			}
-
-		}
-	}
-}
-
-void ASEO_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ThisClass, TeamInfo);
-	DOREPLIFETIME(ThisClass, MatchSetting);
-	
-}

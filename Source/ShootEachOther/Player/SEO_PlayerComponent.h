@@ -10,7 +10,6 @@
 
 class USEO_AttributeSet;
 class USEOAbilitySystemComponent;
-//class UInputConfig;
 class USEOPawnData;
 struct FInputActionValue;
 
@@ -24,47 +23,34 @@ public:
 	// Sets default values for this component's properties
 	USEO_PlayerComponent();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData", ReplicatedUsing = OnRep_PawnData)
-	TObjectPtr<const USEOPawnData> PawnData;
-
-public:
+	/*Use this to set whether the defaults binding(move and look) are allow to control or not*/
 	UFUNCTION(BlueprintCallable)
 	void SetNativeInputEnable(bool Disable = false);
 
-protected:
-
-	USEO_AttributeSet* m_AttributeSet;
-	TObjectPtr<APawn> m_Pawn;
-
-	bool DisableNativeInput;
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData", Replicated)
+	TObjectPtr<const USEOPawnData> PawnData;
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void InitializeInputContext();
 
 	void InitializeInputBinding(UInputComponent* IC);
-	/** Called for movement input */
-	void Input_Move(const FInputActionValue& Value);
 
-	/** Called for looking input */
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void Input_Move(const FInputActionValue& Value);
 	void Input_Look(const FInputActionValue& Value);
 
 	void Input_AbilityTagPressed(FGameplayTag tag);
 	void Input_AbilityTagReleased(FGameplayTag tag);
 
-	UFUNCTION()
-	void OnRep_PawnData();
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void InitializeInputContext();
+protected:
+	TObjectPtr<APawn> m_Pawn;
+	bool DisableNativeInput;
 
 	friend class AShootEachOtherPlayerController;
-
-
 	
 
 };

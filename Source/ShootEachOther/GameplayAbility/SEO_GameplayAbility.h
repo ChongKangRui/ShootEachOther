@@ -40,6 +40,9 @@ public:
 	const USEO_PlayerComponent* GetPlayerComponent() const;
 
 	UFUNCTION(BlueprintPure, Category = "SEO|Ability")
+	const ASEO_GameState* GetSEOGameState() const;
+
+	UFUNCTION(BlueprintPure, Category = "SEO|Ability")
 	UWeaponInventoryComponent* GetWeaponInventoryComponent() const;
 
 	UFUNCTION(BlueprintPure, Category = "SEO|Ability")
@@ -47,9 +50,6 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "SEO|Ability")
 	USEOAbilitySystemComponent* GetSEOAbilitySystemComponent() const;
-
-	UFUNCTION(BlueprintPure, Category = "SEO|Ability")
-	const ASEO_GameState* GetSEOGameState() const;
 
 	EAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; };
 

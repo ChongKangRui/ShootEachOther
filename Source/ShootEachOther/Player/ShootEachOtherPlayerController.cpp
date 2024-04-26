@@ -11,29 +11,6 @@
 #include "SEO_GlobalFunctionLibrary.h"
 
 
-
-USEOAbilitySystemComponent* AShootEachOtherPlayerController::GetSEOAbilitySystemComponent() const
-{
-	const ASEO_PlayerState* playerState = GetSEOPlayerState();
-	return playerState ? playerState->GetSEOAbilitySystemComponent() : nullptr;
-}
-
-ASEO_PlayerState* AShootEachOtherPlayerController::GetSEOPlayerState() const
-{
-	return CastChecked<ASEO_PlayerState>(PlayerState, ECastCheckedType::NullAllowed);
-}
-
-void AShootEachOtherPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-void AShootEachOtherPlayerController::Tick(float deltatime)
-{
-	Super::Tick(deltatime);
-}
-
 void AShootEachOtherPlayerController::OnPossess(APawn* PawnToProcess)
 {
 	Super::OnPossess(PawnToProcess);
@@ -51,11 +28,11 @@ void AShootEachOtherPlayerController::OnPossess(APawn* PawnToProcess)
 					Ability->GiveAbilityToASC(asc);
 					USEO_GlobalFunctionLibrary::SEO_Log(this, ELogType::Error, "give ability to component success");
 				}
-		
+
 			}
 		}
 	}
-	
+
 }
 
 void AShootEachOtherPlayerController::PostProcessInput(const float DeltaTime, const bool bGamePaused)
@@ -65,3 +42,16 @@ void AShootEachOtherPlayerController::PostProcessInput(const float DeltaTime, co
 	}
 	Super::PostProcessInput(DeltaTime, bGamePaused);
 }
+
+USEOAbilitySystemComponent* AShootEachOtherPlayerController::GetSEOAbilitySystemComponent() const
+{
+	const ASEO_PlayerState* playerState = GetSEOPlayerState();
+	return playerState ? playerState->GetSEOAbilitySystemComponent() : nullptr;
+}
+
+ASEO_PlayerState* AShootEachOtherPlayerController::GetSEOPlayerState() const
+{
+	return CastChecked<ASEO_PlayerState>(PlayerState, ECastCheckedType::NullAllowed);
+}
+
+

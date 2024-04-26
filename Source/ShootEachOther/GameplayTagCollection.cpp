@@ -16,17 +16,11 @@ namespace GameplayTagsCollection {
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Death, "GameplayEvent.Death", "Event that fires on death. This event only fires on the server.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Reset, "GameplayEvent.Reset", "Event that fires once a player reset is executed.");
 
-
-
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Gameplay_AbilityInputBlocked, "Gameplay.AbilityInputBlocked");
-
-	//UE_DEFINE_GAMEPLAY_TAG_COMMENT(VFX_Death, "VFX.Death", "Event that fires on death. This event only fires on the server.");
-	//UE_DEFINE_GAMEPLAY_TAG_COMMENT(VFX_Hit, "VFX.Hit", "Event that fires once a player reset is executed.");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponDamage, "Weapon.Damage", "Use this value to apply the damage to target health, this should used for set magnitube by caller");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponCurrentAmmo, "Weapon.Ammo.Current", "Use to represent the current ammo.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponCurrentSpareAmmo, "Weapon.Ammo.CurrentSpare", "Use to represent the current spare ammo.");
-
 
 	FGameplayTag FindTagByString(const FString& TagString, bool bMatchPartialString)
 	{

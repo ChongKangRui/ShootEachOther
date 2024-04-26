@@ -1,49 +1,23 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ShootEachOtherCharacter.h"
-
-#include "../Weapon/ShootEachOtherProjectile.h"
-
 #include "Animation/AnimInstance.h"
-
 #include "Camera/CameraComponent.h"
-
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-
 #include "InputActionValue.h"
-
 #include "Engine/LocalPlayer.h"
-
 #include "Player/ShootEachOtherPlayerController.h"
 #include "Player/SEO_PlayerState.h"
-
 #include "SEO_GlobalFunctionLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
-//////////////////////////////////////////////////////////////////////////
-// AShootEachOtherCharacter
-
 AShootEachOtherCharacter::AShootEachOtherCharacter()
 {
-	// Character doesnt have a rifle at start
-	bHasRifle = false;
-	
-	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
-		
-
-	}
-
-void AShootEachOtherCharacter::BeginPlay()
-{
-	// Call the base class  
-	Super::BeginPlay();
-
 }
 
 AShootEachOtherPlayerController* AShootEachOtherCharacter::GetSEOPlayerController() const
@@ -69,16 +43,6 @@ UAbilitySystemComponent* AShootEachOtherCharacter::GetAbilitySystemComponent() c
 	}
 	USEO_GlobalFunctionLibrary::SEO_Log(this, ELogType::Error, "Invalid ability system component get from player state");
 	return nullptr;
-}
-
-void AShootEachOtherCharacter::SetHasRifle(bool bNewHasRifle)
-{
-	bHasRifle = bNewHasRifle;
-}
-
-bool AShootEachOtherCharacter::GetHasRifle()
-{
-	return bHasRifle;
 }
 
 APlayerCameraManager* AShootEachOtherCharacter::GetFirstPersonCameraManager() const

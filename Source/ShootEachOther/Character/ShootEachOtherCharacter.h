@@ -19,7 +19,6 @@ class AShootEachOtherPlayerController;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
-
 UCLASS(config=Game)
 class AShootEachOtherCharacter : public ACharacter, public IAbilitySystemInterface
 {
@@ -35,12 +34,7 @@ class AShootEachOtherCharacter : public ACharacter, public IAbilitySystemInterfa
 	
 public:
 	AShootEachOtherCharacter();
-
-protected:
-	virtual void BeginPlay();
-
 public:
-		
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	AShootEachOtherPlayerController* GetSEOPlayerController() const;
 
@@ -49,27 +43,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	USEOAbilitySystemComponent* GetSEOAbilitySystemComponent() const;
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* LookAction;
-
-	/** Bool for AnimBP to switch to another animation set */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
-	bool bHasRifle;
-
-	/** Setter to set the bool */
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	void SetHasRifle(bool bNewHasRifle);
-
-	/** Getter for the bool */
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	bool GetHasRifle();
-
 public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	APlayerCameraManager* GetFirstPersonCameraManager() const;
-
 };
 

@@ -17,7 +17,6 @@ void USEOAbilitySystemComponent::ProcessAllAbility(float DeltaTime)
 {
 	if (HasMatchingGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked))
 	{
-		//UE_LOG(LogTemp, Error, TEXT("Blocking ability"));
 		ClearAbilityInput();
 		return;
 	}
@@ -57,10 +56,8 @@ void USEOAbilitySystemComponent::ProcessAllAbility(float DeltaTime)
 	}
 	
 	for (const FGameplayAbilitySpecHandle& ability : AbilityToActivate) {
-		UE_LOG(LogTemp, Error, TEXT("has ability to activate"));
 		TryActivateAbility(ability);
 	}
-
 
 	for (FGameplayAbilitySpecHandle ReleasedSpecHandle : InputReleasedSpecHandles) {
 		if (FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(ReleasedSpecHandle)) {
@@ -108,7 +105,6 @@ void USEOAbilitySystemComponent::AbilitySpecInputReleased(FGameplayAbilitySpec& 
 
 void USEOAbilitySystemComponent::ClearAbilityInput()
 {
-	//UE_LOG(LogTemp, Display, TEXT("Clear All Ability"));
 	InputPressedSpecHandles.Reset();
 	InputHeldSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
@@ -129,7 +125,6 @@ void USEOAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 		}
 	}
 }
-
 
 void USEOAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
 {

@@ -29,13 +29,13 @@ struct FGameplayTagStack : public FFastArraySerializerItem
 	FString GetDebugString() const;
 
 private:
-	friend FGameplayTagStackContainer;
-
 	UPROPERTY()
 	FGameplayTag Tag;
 
 	UPROPERTY()
 	int32 StackCount = 0;
+
+	friend FGameplayTagStackContainer;
 };
 
 /** Container of gameplay tag stacks */
@@ -45,7 +45,6 @@ struct FGameplayTagStackContainer : public FFastArraySerializer
 	GENERATED_BODY()
 
 	FGameplayTagStackContainer()
-		//	: Owner(nullptr)
 	{
 	}
 

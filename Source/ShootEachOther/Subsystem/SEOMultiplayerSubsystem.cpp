@@ -7,6 +7,28 @@
 #include "Online/OnlineSessionNames.h"
 #include "Online.h"
 
+void USEOMultiplayerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+    Super::Initialize(Collection);
+    // Get the OnlineSubsystem we want to work with
+
+      // Get the session interface from the OnlineSubsystem
+    SessionInterface = Online::GetSessionInterface();
+    SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &USEOMultiplayerSubsystem::OnFindSessionComplete);
+    SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &USEOMultiplayerSubsystem::OnCreateSessionComplete);
+    SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &USEOMultiplayerSubsystem::OnJoinSessionComplete);
+
+    UE_LOG(LogTemp, Warning, TEXT("Multiplayer Subsystem initialization"));
+}
+
+void USEOMultiplayerSubsystem::Deinitialize()
+{
+    Super::Deinitialize();
+
+    UE_LOG(LogTemp, Warning, TEXT("Multiplayer Subsystem deinitialization"));
+
+}
+
 void USEOMultiplayerSubsystem::CreateSession(const int MaxPlayer, const bool UseLAM, const FName SessionName)
 {
     if (SessionInterface.IsValid())
@@ -29,6 +51,7 @@ void USEOMultiplayerSubsystem::CreateSession(const int MaxPlayer, const bool Use
     }
     UE_LOG(LogTemp, Warning, TEXT("Invalid Session Interface"));
 }
+
 void USEOMultiplayerSubsystem::FindSession(const int MaxSearchResultInt, const bool UseLAM)
 {
 
@@ -59,8 +82,6 @@ void USEOMultiplayerSubsystem::JoinSession(const FString& SessionName)
         UE_LOG(LogTemp, Warning, TEXT("joining Invalid Session Interface"));
     }
 }
-
-
 
 const FOnlineSessionSearchResult USEOMultiplayerSubsystem::GetSessionResultFromString(const FString Session) const
 {
@@ -168,26 +189,4 @@ void USEOMultiplayerSubsystem::OnJoinSessionComplete(FName SessionName, EOnJoinS
     }
 
 
-}
-
-void USEOMultiplayerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
-{
-    Super::Initialize(Collection);
-    // Get the OnlineSubsystem we want to work with
-
-      // Get the session interface from the OnlineSubsystem
-    SessionInterface = Online::GetSessionInterface();
-    SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &USEOMultiplayerSubsystem::OnFindSessionComplete);
-    SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &USEOMultiplayerSubsystem::OnCreateSessionComplete);
-    SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &USEOMultiplayerSubsystem::OnJoinSessionComplete);
-
-    UE_LOG(LogTemp, Warning, TEXT("Multiplayer Subsystem initialization"));
-}
-
-void USEOMultiplayerSubsystem::Deinitialize()
-{
-    Super::Deinitialize();
-
-    UE_LOG(LogTemp, Warning, TEXT("Multiplayer Subsystem deinitialization"));
-   
 }

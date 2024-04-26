@@ -43,11 +43,9 @@ class SHOOTEACHOTHER_API USEO_AbilitySet : public UPrimaryDataAsset
 
 public:
 	USEO_AbilitySet(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
 	void GiveAbilityToASC(USEOAbilitySystemComponent* asc);
 
 protected:
-
 	// Gameplay abilities to grant when this ability set is granted.
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities", meta = (TitleProperty = Ability))
 	TArray<FAbilitySet_GameplayAbility> GrantedGameplayAbilities;

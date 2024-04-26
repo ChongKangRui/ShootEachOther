@@ -32,8 +32,6 @@ public:
 
 	FSessionInfo() : SessionName("Session"), CurrentPlayer(0), MaxPlayer(0), Ping(0) {}
 	FSessionInfo(FString name, int32 currentPlayer, int32 maxPlayer, int32 ping) : SessionName(name), CurrentPlayer(currentPlayer), MaxPlayer(maxPlayer), Ping(ping){}
-
-
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFoundSession, const TArray<FSessionInfo>&, sessionInfo);
@@ -57,7 +55,6 @@ public:
 	virtual void OnFindSessionComplete(bool IsSuccess);
 	virtual void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 	virtual void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-
 public:
 	/*This will be call after all the session being added to array*/
 	UPROPERTY(BlueprintAssignable)
@@ -68,7 +65,6 @@ protected:
 	virtual void Deinitialize() override;
 
 private:
-	/*Helper function*/
 	const FOnlineSessionSearchResult GetSessionResultFromString(const FString Session) const;
 
 private:

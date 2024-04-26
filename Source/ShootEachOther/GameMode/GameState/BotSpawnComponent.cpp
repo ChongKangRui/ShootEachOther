@@ -9,6 +9,7 @@
 
 #include "Player/SEO_PlayerState.h"
 
+//Example Code
 //void ULyraBotCreationComponent::SpawnOneBot()
 //{
 //	FActorSpawnParameters SpawnInfo;
@@ -75,6 +76,15 @@
 //		}
 //	}
 //}
+UBotSpawnComponent::UBotSpawnComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	SetIsReplicated(true);
+}
+
+void UBotSpawnComponent::BeginPlay()
+{
+	owner = GetGameState<ASEO_GameState>();
+}
 
 void UBotSpawnComponent::AddOneBot(const int32 TeamID, const int Index)
 {
@@ -84,8 +94,6 @@ void UBotSpawnComponent::AddOneBot(const int32 TeamID, const int Index)
 	}
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-//	SpawnInfo.ObjectFlags |= RF_Transient;
 
 	AAIController* NewController = GetWorld()->SpawnActor<AAIController>(BotControllerClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
 	if (NewController) {
@@ -107,12 +115,3 @@ void UBotSpawnComponent::RemoveBot(const int32 TeamID, const int Index)
 }
 
 
-UBotSpawnComponent::UBotSpawnComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
-	SetIsReplicated(true);
-}
-
-void UBotSpawnComponent::BeginPlay()
-{
-	owner = GetGameState<ASEO_GameState>();
-}

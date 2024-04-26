@@ -23,17 +23,11 @@ ASEO_PlayerState::ASEO_PlayerState(const FObjectInitializer& ObjectInitializer)
 
 }
 
-UAbilitySystemComponent* ASEO_PlayerState::GetAbilitySystemComponent() const
-{
-	return GetSEOAbilitySystemComponent();
-}
-
 void ASEO_PlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 	AbilitySystemComponent->AbilityActorInfo.Get()->OwnerActor = this;
 
-	
 	if (AGameModeBase* GM = GetWorld()->GetAuthGameMode()) {
 		sGM = Cast<AShootEachOtherGameMode>(GM);
 	}
@@ -44,6 +38,11 @@ void ASEO_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ThisClass, Ready);
+}
+
+UAbilitySystemComponent* ASEO_PlayerState::GetAbilitySystemComponent() const
+{
+	return GetSEOAbilitySystemComponent();
 }
 
 bool ASEO_PlayerState::GetIsReady() const
@@ -63,11 +62,15 @@ void ASEO_PlayerState::SetIsReady_Implementation(const bool IsReady)
 
 void ASEO_PlayerState::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 {
-	UE_LOG(LogTemp, Error, TEXT("What %i"), NewTeamID.GetId());
 	TeamId = NewTeamID;
 }
 
 FGenericTeamId ASEO_PlayerState::GetGenericTeamId() const
+{
+	return TeamId;
+}
+
+int32 ASEO_PlayerState::GetTeamID() const
 {
 	return TeamId;
 }
@@ -93,9 +96,5 @@ bool ASEO_PlayerState::AddOwningMoney(const int value)
 	return true;
 }
 
-int32 ASEO_PlayerState::GetTeamID() const
-{
-	return TeamId;
-}
 
 

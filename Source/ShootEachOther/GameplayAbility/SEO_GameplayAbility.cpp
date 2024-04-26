@@ -20,26 +20,6 @@ const UWeaponInstance* USEO_GameplayAbility::GetEquippedWeaponInstance() const
 	return nullptr;
 }
 
-UWeaponInstance* USEO_GameplayAbility::GetEquippedWeaponInstance()
-{
-	if (UWeaponInventoryComponent* wic = GetWeaponInventoryComponent()) {
-		return wic->FindWeaponBySlot(wic->ActivatingSlot);
-	}
-	return nullptr;
-}
-
-UWeaponInventoryComponent* USEO_GameplayAbility::GetWeaponInventoryComponent() const
-{
-	if (GetAvatarActorFromActorInfo()) {
-		if (UWeaponInventoryComponent* wic = GetAvatarActorFromActorInfo()->FindComponentByClass<UWeaponInventoryComponent>()) {
-			return wic;
-		}
-	}
-	return nullptr;
-}
-
-
-
 const USEO_PlayerComponent* USEO_GameplayAbility::GetPlayerComponent() const
 {
 	if (GetAvatarActorFromActorInfo()) {
@@ -48,19 +28,6 @@ const USEO_PlayerComponent* USEO_GameplayAbility::GetPlayerComponent() const
 		}
 	}
 	return nullptr;
-}
-
-
-
-AShootEachOtherCharacter* USEO_GameplayAbility::GetSEOCharacter() const
-{
-	return CastChecked<AShootEachOtherCharacter>(GetAvatarActorFromActorInfo(), ECastCheckedType::NullAllowed);
-}
-
-USEOAbilitySystemComponent* USEO_GameplayAbility::GetSEOAbilitySystemComponent() const
-{
-	
-	return (CurrentActorInfo ? Cast<USEOAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get()) : nullptr);;
 }
 
 const ASEO_GameState* USEO_GameplayAbility::GetSEOGameState() const
@@ -75,10 +42,38 @@ const ASEO_GameState* USEO_GameplayAbility::GetSEOGameState() const
 	return nullptr;
 }
 
+UWeaponInventoryComponent* USEO_GameplayAbility::GetWeaponInventoryComponent() const
+{
+	if (GetAvatarActorFromActorInfo()) {
+		if (UWeaponInventoryComponent* wic = GetAvatarActorFromActorInfo()->FindComponentByClass<UWeaponInventoryComponent>()) {
+			return wic;
+		}
+	}
+	return nullptr;
+}
+
+AShootEachOtherCharacter* USEO_GameplayAbility::GetSEOCharacter() const
+{
+	return CastChecked<AShootEachOtherCharacter>(GetAvatarActorFromActorInfo(), ECastCheckedType::NullAllowed);
+}
+
+USEOAbilitySystemComponent* USEO_GameplayAbility::GetSEOAbilitySystemComponent() const
+{
+	
+	return (CurrentActorInfo ? Cast<USEOAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get()) : nullptr);;
+}
+
+UWeaponInstance* USEO_GameplayAbility::GetEquippedWeaponInstance()
+{
+	if (UWeaponInventoryComponent* wic = GetWeaponInventoryComponent()) {
+		return wic->FindWeaponBySlot(wic->ActivatingSlot);
+	}
+	return nullptr;
+}
+
 void USEO_GameplayAbility::ApplyDamageToTarget_Implementation(const float Damage, AActor* HitActor)
 {
 	/*Apply damage gameplay effect to target*/
-
 	bool HasFriendlyDamage = false;
 	if (GetSEOGameState()) {
 		HasFriendlyDamage = GetSEOGameState()->GetMatchSetting().HasFriendlyDamage;

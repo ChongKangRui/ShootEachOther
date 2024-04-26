@@ -8,15 +8,6 @@
 
 AShootEachOtherGameMode::AShootEachOtherGameMode()
 {
-	// set default pawn class to our Blueprinted character
-	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/FirstPerson/Blueprints/BP_FirstPersonCharacter"));
-	//DefaultPawnClass = PlayerPawnClassFinder.Class;
-	
-}
-
-void AShootEachOtherGameMode::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 void AShootEachOtherGameMode::PostLogin(APlayerController* pc)
@@ -82,9 +73,7 @@ int32 AShootEachOtherGameMode::GetLeastMemberOfTeam() const
 			UE_LOG(LogTemp, Error, TEXT("why team a"));
 		}
 	}
-	
 	return -1;
-	
 }
 
 int32 AShootEachOtherGameMode::GetTeamIDFromTeamEnum(const ETeamType& team) const

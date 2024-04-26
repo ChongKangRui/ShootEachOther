@@ -17,16 +17,16 @@ class SHOOTEACHOTHER_API USEOAbilitySystemComponent : public UAbilitySystemCompo
 public:
 	USEOAbilitySystemComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(BlueprintCallable)
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
+	UFUNCTION(BlueprintCallable)
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+
 	void ProcessAllAbility(float DeltaTime);
 	void ClearAbilityInput();
 
 	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;
 	virtual void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
-
-	UFUNCTION(BlueprintCallable)
-	void AbilityInputTagPressed(const FGameplayTag& InputTag);
-	UFUNCTION(BlueprintCallable)
-	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
 private:
 	TArray<FGameplayAbilitySpecHandle> InputPressedSpecHandles;

@@ -57,6 +57,7 @@ protected:
 
 UENUM(BlueprintType)
 enum class EMatchType : uint8 {
+	/*2 teams fight*/
 	ThreeRoundTwoWin,
 	FiveRoundThreeWin,
 	/*1vs1*/
@@ -91,6 +92,9 @@ class SHOOTEACHOTHER_API ASEO_GameState : public AGameState
 public:
 	ASEO_GameState();
 
+	UFUNCTION(BlueprintPure)
+	FMatchSetting GetMatchSetting() const;
+
 	UFUNCTION(BlueprintCallable)
 	TArray<FTeamInfo> GetTeamsInfo() const;
 
@@ -103,8 +107,10 @@ public:
 	UFUNCTION(Server, Reliable)
 	void CreateTeam(int32 TeamID);
 
-	UFUNCTION(BlueprintPure)
-	FMatchSetting GetMatchSetting() const;
+protected:
+	void BeginPlay() override;
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<FTeamInfo> TeamInfo;
@@ -112,7 +118,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	FMatchSetting MatchSetting;
 
-private:
-	void BeginPlay() override;
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 };

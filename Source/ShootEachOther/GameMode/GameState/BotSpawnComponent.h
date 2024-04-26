@@ -17,17 +17,14 @@ class SHOOTEACHOTHER_API UBotSpawnComponent : public UGameStateComponent
 public:
 	UBotSpawnComponent(const FObjectInitializer& ObjectInitializer);
 
-
 	UFUNCTION(BlueprintCallable)
 	void AddOneBot(const int32 TeamID, const int Index);
 	UFUNCTION(BlueprintCallable)
 	void RemoveBot(const int32 TeamID, const int index);
 
-
 public:
 	UPROPERTY(EditDefaultsOnly);
 	TSubclassOf<class AAIController> BotControllerClass;
-
 
 protected:
 	void BeginPlay() override;

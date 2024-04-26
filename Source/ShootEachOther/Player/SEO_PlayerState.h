@@ -26,23 +26,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ability System")
 	USEOAbilitySystemComponent* GetSEOAbilitySystemComponent() const { return AbilitySystemComponent; }
 
-
-
 	/*Team related*/
 	UFUNCTION(BlueprintPure, Category = "Team")
 	bool GetIsReady() const;
-
 	UFUNCTION(BlueprintCallable,Server, Reliable, Category = "Team")
 	void SetIsReady(const bool IsReady);
-
-
-	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
-	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	/*Shop System*/
 	UFUNCTION(BlueprintPure, Category = "Shop System")
 	int GetOwningMoney() const;
-	/*Failed if money goes below zero*/
+	/*Failed if money goes below 0 after deduct the value*/
 	UFUNCTION(BlueprintCallable, Category = "Shop System")
 	bool DeductOwningMoney(const int value);
 	UFUNCTION(BlueprintCallable, Category = "Shop System")
@@ -50,29 +43,28 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Team")
 	int32 GetTeamID() const;
+	
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
 
 protected:
 	virtual void BeginPlay() override;
 
 protected:
+	UPROPERTY(BlueprintReadOnly)
+	FGenericTeamId TeamId;
+
+	UPROPERTY(Replicated)
+	bool Ready = false;
 
 	UPROPERTY()
 	TObjectPtr<const class USEO_AttributeSet> AttributeSet;
 
-	UPROPERTY(BlueprintReadOnly)
-	FGenericTeamId TeamId;
-
 	int OwningMoney = 2000;
-
-	UPROPERTY(Replicated)
-	bool Ready = false;
-	
-private:
-	UPROPERTY(VisibleAnywhere, Category = "Ability System")
-	TObjectPtr<USEOAbilitySystemComponent> AbilitySystemComponent;
-
-	 TObjectPtr<class AShootEachOtherGameMode> sGM;
 private:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+private:
+	TObjectPtr<USEOAbilitySystemComponent> AbilitySystemComponent;
+	TObjectPtr<class AShootEachOtherGameMode> sGM;
 	
 };

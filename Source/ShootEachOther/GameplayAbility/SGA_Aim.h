@@ -7,9 +7,6 @@
 #include "Weapon/WeaponData.h"
 #include "SGA_Aim.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SHOOTEACHOTHER_API USGA_Aim : public USEO_GameplayAbility
 {

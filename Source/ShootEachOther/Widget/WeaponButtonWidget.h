@@ -14,12 +14,8 @@ UCLASS()
 class SHOOTEACHOTHER_API UWeaponButtonWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
 public:
-
 	UFUNCTION(BlueprintCallable)
 	void BuyWeapon(const EWeaponType& GrantedWeapon);
-
-
 
 };

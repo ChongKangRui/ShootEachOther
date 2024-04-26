@@ -30,18 +30,16 @@ public:
 	UFUNCTION(BlueprintPure)
 	ETeamType GetTeamEnumFromID(const int32& genericid) const;
 
+public:
 	UPROPERTY(BlueprintAssignable)
 	FOnTeamIDAssigned OnTeamIDAssigned;
 
 protected:
-	virtual void BeginPlay() override;
 	virtual void PostLogin(APlayerController* pc) override;
-	
+
 	void ServerCreateTeam();
 	void AssignTeamToPlayer(APlayerController* pc, int32 TeamId);
 	int32 GetLeastMemberOfTeam() const;
-
-
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UMatchInfo> MatchInformation;

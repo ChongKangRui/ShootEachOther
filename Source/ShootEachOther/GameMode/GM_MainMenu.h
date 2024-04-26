@@ -27,7 +27,7 @@ class SHOOTEACHOTHER_API AGM_MainMenu : public AGameModeBase
 
 public:
 	AGM_MainMenu();
-	
+	/*
 	UFUNCTION(BlueprintCallable, Meta = (ExpandEnumAsExecs = "Result"))
 	void CreateSession(const int MaxPlayer, TEnumAsByte<ECreateSessionResults>& Result ,const bool UseLAM = false, const FName SessionName = "Session");
 
@@ -52,8 +52,7 @@ private:
 private:
 	IOnlineSessionPtr SessionInterface;
 	TArray<FString> SessionIDs;
-
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 	
-	bool SearchFinished;
+	bool SearchFinished;*/
 };

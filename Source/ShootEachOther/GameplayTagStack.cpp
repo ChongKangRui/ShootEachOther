@@ -1,16 +1,10 @@
 #include "GameplayTagStack.h"
 #include "UObject/Stack.h"
 
-//////////////////////////////////////////////////////////////////////
-// FGameplayTagStack
-
 FString FGameplayTagStack::GetDebugString() const
 {
 	return FString::Printf(TEXT("%sx%d"), *Tag.ToString(), StackCount);
 }
-
-////////////////////////////////////////////////////////////////////////
-// FGameplayTagStackContainer
 
 void FGameplayTagStackContainer::AddStack(FGameplayTag Tag, int32 StackCount)
 {

@@ -95,7 +95,6 @@ void USGA_Shoot::StartWeaponTrace()
 
 FHitResult USGA_Shoot::WeaponTrace(const FVector& StartTrace, const FVector& EndTrace, TArray<FHitResult>& OutHitResult, float SweepRadius, float DebugTime) const
 {
-	
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams TraceParams(SCENE_QUERY_STAT(WeaponTrace), /*bTraceComplex=*/ true, /*IgnoreActor=*/ GetAvatarActorFromActorInfo());
 	
@@ -146,13 +145,8 @@ FHitResult USGA_Shoot::WeaponTrace(const FVector& StartTrace, const FVector& End
 	}
 
 	return Hit;
-	
-
-
-    
 }
 
-/*Replicated Hitresult is needed*/
 void USGA_Shoot::OnWeaponFired_Server_Implementation(const TArray<FHitResult>& HitResult)
 {
 	OnWeaponFired_MultiCast(HitResult);
@@ -162,7 +156,6 @@ void USGA_Shoot::OnWeaponFired_MultiCast_Implementation(const TArray<FHitResult>
 {
 	OnWeaponFired(HitResult);
 }
-
 
 FVector USGA_Shoot::GetTraceStart(const ETraceSourceType& type) const
 {
@@ -174,15 +167,11 @@ FVector USGA_Shoot::GetTraceStart(const ETraceSourceType& type) const
 				return AttachedWeapon->GetTraceStart()->GetComponentLocation();
 			}
 		}
-		UE_LOG(LogTemp, Error, TEXT("Invalid weapon inventory component or attached weapon reference !!!"));
 	}
-	return FVector();
 	case ETraceSourceType::ShootFromCameraToward:
 		const APlayerCameraManager* CameraManager = GetSEOCharacter()->GetFirstPersonCameraManager();
 		return CameraManager->GetCameraLocation();
-
 	}
-	UE_LOG(LogTemp, Error, TEXT("Unknown ETraceSourceType !!!"));
 	return FVector();
 }
 
@@ -193,22 +182,16 @@ FVector USGA_Shoot::GetTraceDirection(const ETraceSourceType& type, const float&
 		const UWeaponInventoryComponent* wic = GetWeaponInventoryComponent();
 		if (wic) {
 			if (const AWeaponBase* AttachedWeapon = wic->GetCurrentAttachedWeapon()) {
-				UE_LOG(LogTemp, Warning, TEXT("firepoint Forward %s"), *AttachedWeapon->GetTraceStart()->GetForwardVector().ToString());
 				FVector WeaponPointForwardVector = AttachedWeapon->GetTraceStart()->GetForwardVector();
 				return AttachedWeapon->GetTraceStart()->GetComponentLocation() + (WeaponPointForwardVector * TraceDistance);
 			}
 		}
-		UE_LOG(LogTemp, Error, TEXT("Invalid weapon inventory component or attached weapon reference !!!"));
 	}
-		return FVector();
 	case ETraceSourceType::ShootFromCameraToward:
 		const APlayerCameraManager* CameraManager = GetSEOCharacter()->GetFirstPersonCameraManager();
-		UE_LOG(LogTemp, Warning, TEXT("Cam Forward %s"), *CameraManager->GetActorForwardVector().ToString());
 		FVector CamForwardVector = CameraManager->GetActorForwardVector();
 		return CameraManager->GetCameraLocation() + (CamForwardVector * TraceDistance);
-
 	}
-	UE_LOG(LogTemp, Error, TEXT("Unknown ETraceSourceType !!!"));
 	return FVector();
 }
 

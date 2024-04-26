@@ -3,19 +3,12 @@
 
 #include "SEO_GlobalFunctionLibrary.h"
 #include "GameplayTagCollection.h"
-
 #include "Character/ShootEachOtherCharacter.h"
 #include "GameplayAbility/SEOAbilitySystemComponent.h"
-
 #include "Weapon/WeaponInstance.h"
 #include "Weapon/WeaponBase.h"
 #include "Weapon/WeaponData.h"
-
 #include "Player/SEO_PlayerState.h"
-
-
-
-
 
 void USEO_GlobalFunctionLibrary::SEO_Log(const AActor* actor, const ELogType type, FString message)
 {
@@ -47,11 +40,9 @@ void USEO_GlobalFunctionLibrary::SEO_Log(const AActor* actor, const ELogType typ
 	}
 }
 
-
 void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubclassOf<UGameplayEffect> DamageGE, AActor* Causer, AActor* HitActor, bool HasFriendlyFire)
 {
 	/*Apply damage gameplay effect to target*/
-
 	if (HitActor) {
 		const AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
 		const AShootEachOtherCharacter* DamageSource = Cast<AShootEachOtherCharacter>(Causer);
@@ -78,7 +69,6 @@ void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubcla
 				//We wan to set the damage during runtime based on weapon data from datatable.
 				FGameplayEffectSpec& spec = *DamageEffectHandle.Data.Get();
 				spec.SetSetByCallerMagnitude(GameplayTagsCollection::WeaponDamage, -Damage);
-				//USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Apply Damage");
 				//Finally we apply gameplay effect to target
 				asc->ApplyGameplayEffectSpecToTarget(spec, TargetASC);
 				return;
