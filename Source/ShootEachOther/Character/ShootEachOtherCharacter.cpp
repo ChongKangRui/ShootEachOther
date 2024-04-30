@@ -11,7 +11,9 @@
 #include "Engine/LocalPlayer.h"
 #include "Player/ShootEachOtherPlayerController.h"
 #include "Player/SEO_PlayerState.h"
+#include "AI/AIBotController.h"
 #include "SEO_GlobalFunctionLibrary.h"
+
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -22,7 +24,8 @@ AShootEachOtherCharacter::AShootEachOtherCharacter()
 
 AShootEachOtherPlayerController* AShootEachOtherCharacter::GetSEOPlayerController() const
 {
-	return CastChecked<AShootEachOtherPlayerController>(Controller, ECastCheckedType::NullAllowed);
+	return GetSEOPlayerState()->IsABot() ? nullptr : 
+		CastChecked<AShootEachOtherPlayerController>(Controller, ECastCheckedType::NullAllowed);
 }
 
 ASEO_PlayerState* AShootEachOtherCharacter::GetSEOPlayerState() const
@@ -33,6 +36,11 @@ ASEO_PlayerState* AShootEachOtherCharacter::GetSEOPlayerState() const
 USEOAbilitySystemComponent* AShootEachOtherCharacter::GetSEOAbilitySystemComponent() const
 {
 	return Cast<USEOAbilitySystemComponent>(GetAbilitySystemComponent());;
+}
+
+AAIBotController* AShootEachOtherCharacter::GetBotController() const
+{
+	return GetSEOPlayerState()->IsABot() ? CastChecked<AAIBotController>(Controller, ECastCheckedType::NullAllowed) : nullptr;
 }
 
 UAbilitySystemComponent* AShootEachOtherCharacter::GetAbilitySystemComponent() const

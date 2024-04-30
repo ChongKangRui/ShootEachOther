@@ -9,6 +9,7 @@ namespace GameplayTagsCollection {
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Move, "Input.Move", "Move input.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Look, "Input.Look", "Mouse Look.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Shoot, "Input.Shoot", "Shoot.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Shoot_Auto, "Input.Shoot.Auto", "Auto Shoot.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Aim, "Input.Aim", "Aim.");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Slot, "Input.Slot", "Weapon Slot");

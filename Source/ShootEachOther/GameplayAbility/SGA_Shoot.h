@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayAbility/SEO_GameplayAbility.h"
 #include "Weapon/WeaponData.h"
+#include "AI/DA_AIProperty.h"
 #include "SGA_Shoot.generated.h"
 
 /**
@@ -47,6 +48,7 @@ protected:
 	FVector GetTraceStart(const ETraceSourceType& type) const;
 	FVector GetTraceDirection(const ETraceSourceType& type, const float& TraceDistance) const;
 	
-
+private:
+	FVector GetAIShootDirection(const UDA_AIProperty& AIProperty, const float& TraceDistance);
 
 };

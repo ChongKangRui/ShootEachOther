@@ -2,20 +2,15 @@
 
 
 #include "AIBotController.h"
-
 #include "GameplayAbility/SEOAbilitySystemComponent.h"
 #include "GameplayAbility/SEO_AbilitySet.h"
 #include "Character/SEOPawnData.h"
 #include "Character/ShootEachOtherCharacter.h"
-
 #include "Player/SEO_PlayerState.h"
 #include "Player/SEO_PlayerComponent.h"
-
 #include "SEO_GlobalFunctionLibrary.h"
-
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
-
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -34,6 +29,26 @@ AAIBotController::AAIBotController()
 	MyPerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 
 	
+}
+
+void AAIBotController::BeginPlay()
+{
+	Super::BeginPlay();
+	SEO_PlayerState = GetPlayerState<ASEO_PlayerState>();
+}
+
+void AAIBotController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!AI) {
+		USEO_GlobalFunctionLibrary::SEO_Log(this, ELogType::Error, "Invalid AI Character Ref");
+		return;
+	}
+
+	if (USEOAbilitySystemComponent* asc = AI->GetSEOAbilitySystemComponent()) {
+		asc->ProcessAllAbility(DeltaTime);
+	}
 }
 
 void AAIBotController::OnPossess(APawn* PawnToProcess)
@@ -73,29 +88,6 @@ void AAIBotController::OnPossess(APawn* PawnToProcess)
 	
 }
 
-void AAIBotController::BeginPlay()
-{
-	Super::BeginPlay();
-	SEO_PlayerState = GetPlayerState<ASEO_PlayerState>();
-
-
-}
-
-void AAIBotController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	
-	if (!AI) {
-		//USEO_GlobalFunctionLibrary::SEO_Log(this, ELogType::Error, "Invalid AI Character Ref");
-		return;
-	}
-
-	if (USEOAbilitySystemComponent* asc = AI->GetSEOAbilitySystemComponent()) {
-		asc->ProcessAllAbility(DeltaTime);
-	}
-}
-
 ETeamAttitude::Type AAIBotController::GetTeamAttitudeTowards(const AActor& actor) const
 {
 	const AShootEachOtherCharacter* character = Cast<AShootEachOtherCharacter>(&actor);
@@ -112,20 +104,27 @@ ETeamAttitude::Type AAIBotController::GetTeamAttitudeTowards(const AActor& actor
 
 }
 
+const UDA_AIProperty* AAIBotController::GetAIProperty() const
+{
+	return AIData;
+}
+
+const AActor* AAIBotController::GetCurrentTarget() const
+{
+	return Target;
+}
+
 void AAIBotController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	
 	for (const auto& Actor : UpdatedActors)
 	{
 		if (Actor && Actor->IsA<ACharacter>())
 		{
 			if (!GetBlackboardComponent()->GetValueAsObject("Target")) {
+				
+				Target = Actor;
 				GetBlackboardComponent()->SetValueAsObject("Target", Actor);
 			}
-				
-			
-			
-			
 		}
 	}
 }

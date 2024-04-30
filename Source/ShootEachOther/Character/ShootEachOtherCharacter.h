@@ -16,6 +16,7 @@ class UInputMappingContext;
 class USEOAbilitySystemComponent;
 class ASEO_PlayerState;
 class AShootEachOtherPlayerController;
+class AAIBotController;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -35,18 +36,24 @@ class AShootEachOtherCharacter : public ACharacter, public IAbilitySystemInterfa
 public:
 	AShootEachOtherCharacter();
 public:
-	UFUNCTION(BlueprintCallable, Category = "Character")
+	UFUNCTION(BlueprintPure, Category = "Character")
 	AShootEachOtherPlayerController* GetSEOPlayerController() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Character")
+	UFUNCTION(BlueprintPure, Category = "Character")
 	ASEO_PlayerState* GetSEOPlayerState() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Character")
+	UFUNCTION(BlueprintPure, Category = "Character")
 	USEOAbilitySystemComponent* GetSEOAbilitySystemComponent() const;
 
+	UFUNCTION(BlueprintPure, Category = "Character")
+	AAIBotController* GetBotController() const;
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	APlayerCameraManager* GetFirstPersonCameraManager() const;
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+	FRotator AIRotation;
 };
 

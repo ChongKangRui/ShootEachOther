@@ -59,7 +59,6 @@ AShootEachOtherCharacter* USEO_GameplayAbility::GetSEOCharacter() const
 
 USEOAbilitySystemComponent* USEO_GameplayAbility::GetSEOAbilitySystemComponent() const
 {
-	
 	return (CurrentActorInfo ? Cast<USEOAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get()) : nullptr);;
 }
 

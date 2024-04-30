@@ -5,17 +5,16 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "GameplayAbility/SEOAbilitySystemComponent.h"
 #include "Character/ShootEachOtherCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "GameplayTagCollection.h"
 #include "AIController.h"
 
 
 UBTService_Shoot::UBTService_Shoot(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
     NodeName = "Shoot";
-    
-    // empty KeySelector = allow everything
 }
 
 
@@ -32,8 +31,9 @@ void UBTService_Shoot::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 
     if (!SelfCharacter) {
         SelfCharacter = Cast<AShootEachOtherCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(selfActor.SelectedKeyName));
+       
     }
-    if ((!Enemy)) {
+    if (!Enemy) {
         Enemy = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(Target.SelectedKeyName));
     }
 
@@ -47,10 +47,11 @@ void UBTService_Shoot::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
     FRotator FinalRotation = FMath::RInterpTo(SelfCharacter->Controller->GetControlRotation(),
         TargetRotation, DeltaSeconds, 100.0f);
 
-    SelfCharacter->Controller->SetControlRotation(FinalRotation);
+    SelfCharacter->AIRotation = FinalRotation;
 
-   // UE_LOG(LogTemp, Error, TEXT("Rotation %s"), *FinalRotation.ToString());
-    
-  
-
+    if (SelfCharacter->GetSEOAbilitySystemComponent()) {
+        UE_LOG(LogTemp, Error, TEXT("AIShoot"))
+        SelfCharacter->GetSEOAbilitySystemComponent()->AbilityInputTagPressed(GameplayTagsCollection::Input_Shoot);
+        SelfCharacter->GetSEOAbilitySystemComponent()->AbilityInputTagPressed(GameplayTagsCollection::Input_Shoot_Auto);
+    }
 }

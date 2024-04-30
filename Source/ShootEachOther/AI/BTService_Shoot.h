@@ -23,11 +23,8 @@ public:
 	FBlackboardKeySelector selfActor;
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 	FBlackboardKeySelector Target;
-	
-
 
 protected:
-	
 	virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	

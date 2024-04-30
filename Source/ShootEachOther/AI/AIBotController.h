@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-
 #include "AIBotController.generated.h"
 
 /**
  * 
  */
+class UDA_AIProperty;
+
+
 UCLASS()
 class SHOOTEACHOTHER_API AAIBotController : public AAIController
 {
@@ -24,7 +26,16 @@ public:
 
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& actor)const override;
 
+public:
+	UFUNCTION(BlueprintPure, Category = "AI")
+	const UDA_AIProperty* GetAIProperty() const;
+
+	UFUNCTION(BlueprintPure, Category = "AI")
+	const AActor* GetCurrentTarget() const;
+
 protected: 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData")
+	TObjectPtr<const UDA_AIProperty> AIData;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TObjectPtr<class UAIPerceptionComponent> MyPerceptionComponent;
@@ -32,12 +43,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TObjectPtr<class UAISenseConfig_Sight> SightConfig;
 
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
-	//TObjectPtr<class UBlackboardComponent> BlackboardComp;
-
-//	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
-	//TObjectPtr<class UBehaviorTreeComponent> BehaviorTreeComp;
-
+protected:
 	UFUNCTION()
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
@@ -45,4 +51,6 @@ private:
 
 	TObjectPtr<class ASEO_PlayerState> SEO_PlayerState;
 	class AShootEachOtherCharacter* AI;
+
+	AActor* Target;
 };

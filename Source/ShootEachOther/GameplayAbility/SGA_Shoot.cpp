@@ -4,15 +4,14 @@
 #include "GameplayAbility/SGA_Shoot.h"
 #include "GameplayTagCollection.h"
 #include "GameplayAbility/SEOAbilitySystemComponent.h"
-
 #include "Weapon/WeaponInstance.h"
 #include "Weapon/WeaponBase.h"
-
 #include "Camera/CameraComponent.h"
 #include "Character/ShootEachOtherCharacter.h"
 #include "Character/WeaponInventoryComponent.h"
-
+#include "Player/SEO_PlayerState.h"
 #include "Player/SEO_PlayerComponent.h"
+#include "AI/AIBotController.h"
 #include "SEO_GlobalFunctionLibrary.h"
 
 /*Helper function for bullet spread*/
@@ -54,18 +53,25 @@ void USGA_Shoot::StartWeaponTrace()
 	if (const UWeaponInstance* wi = GetEquippedWeaponInstance()) {
 		AShootEachOtherCharacter* character = GetSEOCharacter();
 		if (character && character->IsLocallyControlled()) {
+			//For AI setting
+			bool IsABot = character->GetPlayerState()->IsABot();
+			const UDA_AIProperty* AISetting = IsABot ? character->GetBotController()->GetAIProperty() : nullptr;
 
-			//For loop so it is flexible when come to shotgun circumstance
+			if (IsABot && !AISetting) {
+				USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Error, "Invalid AI Bot Data, Unable to process shoot function");
+				return;
+			}
+
 			FWeaponData data = wi->GetDefaultsWeaponData();
+
+			const FVector TraceStart = IsABot ? GetTraceStart(ETraceSourceType::ShootFromWeaponFiringPointToward) : GetTraceStart(wi->TraceType);
+			const FVector TraceDirection = IsABot ? GetAIShootDirection(*AISetting,data.TraceDistance) : GetTraceDirection(wi->TraceType, data.TraceDistance);
+
 			for (int i = 0; i < data.BulletPerShoot; i++) {
-
-				const FVector TraceStart = GetTraceStart(wi->TraceType);
-				const FVector TraceDirection = GetTraceDirection(wi->TraceType, data.TraceDistance);
-
+				
 				const float ActualSpreadAngle = data.BulletBaseSpreadAngle;
 				const float HalfSpreadAngleInRadians = FMath::DegreesToRadians(ActualSpreadAngle * 0.5f);
 
-		
 				const FVector FinalTraceDirection = VRandConeNormalDistribution(TraceDirection, HalfSpreadAngleInRadians, data.Exponent);
 
 				TArray<FHitResult> results;
@@ -74,19 +80,12 @@ void USGA_Shoot::StartWeaponTrace()
 				/*Apply damage*/
 				ApplyDamageToTarget(data.Damage, Hit.GetActor());
 
-				//Debug only enable
-				/*FString msg = FString("TraceDirection  == ") + TraceDirection.ToString();
-				FString msg2 = FString("FinalTraceDirection  == ") + FinalTraceDirection.ToString();
-				USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Error, msg);
-				USEO_GlobalFunctionLibrary::SEO_Log(GetAvatarActorFromActorInfo(), ELogType::Error, msg2);*/
-
 				if(character->HasAuthority())
 					OnWeaponFired({Hit});
 				else {
-					OnWeaponFired_Server({ Hit });
+					OnWeaponFired_Server({Hit});
 				}
 			}
-			character->AddControllerPitchInput(wi->GetDefaultsWeaponData().Recoil);
 
 		}
 		
@@ -193,6 +192,17 @@ FVector USGA_Shoot::GetTraceDirection(const ETraceSourceType& type, const float&
 		return CameraManager->GetCameraLocation() + (CamForwardVector * TraceDistance);
 	}
 	return FVector();
+}
+
+FVector USGA_Shoot::GetAIShootDirection(const UDA_AIProperty& AIProperty, const float& TraceDistance)
+{
+	float Y = FMath::RandRange(AIProperty.MinRandomDeviation.X, AIProperty.MaxRandomDeviation.X);
+	float Z = FMath::RandRange(AIProperty.MinRandomDeviation.Y, AIProperty.MaxRandomDeviation.Y);
+
+	const FVector TargetLocation = GetSEOCharacter()->GetBotController()->GetCurrentTarget()->GetActorLocation();
+	const FVector Direction = TargetLocation - GetSEOCharacter()->GetActorLocation();
+
+	return (GetSEOCharacter()->GetActorLocation() + (Direction.GetSafeNormal() * TraceDistance)) +FVector(0.0f, Y, Z);
 }
 
 
