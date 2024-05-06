@@ -25,14 +25,13 @@ public:
 
 	/*Use this to set whether the defaults binding(move and look) are allow to control or not*/
 	UFUNCTION(BlueprintCallable)
-	void SetNativeInputEnable(bool Disable = false);
+	void SetNativeInputEnable(bool Enable = true);
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData", Replicated)
 	TObjectPtr<const USEOPawnData> PawnData;
 
 protected:
-
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void InitializeInputContext();
 

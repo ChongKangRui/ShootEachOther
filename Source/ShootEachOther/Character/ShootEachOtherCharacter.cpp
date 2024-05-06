@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Player/SEO_PlayerComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
@@ -12,6 +13,7 @@
 #include "Player/ShootEachOtherPlayerController.h"
 #include "Player/SEO_PlayerState.h"
 #include "AI/AIBotController.h"
+#include "GameplayTagCollection.h"
 #include "SEO_GlobalFunctionLibrary.h"
 
 
@@ -41,6 +43,21 @@ USEOAbilitySystemComponent* AShootEachOtherCharacter::GetSEOAbilitySystemCompone
 AAIBotController* AShootEachOtherCharacter::GetBotController() const
 {
 	return GetSEOPlayerState()->IsABot() ? CastChecked<AAIBotController>(Controller, ECastCheckedType::NullAllowed) : nullptr;
+}
+
+void AShootEachOtherCharacter::OnCharacterDeath_Implementation()
+{
+	if (GetPlayerState()->IsABot()) {
+		if(HasAuthority())
+			GetBotController()->StopMovement();
+	}
+	else {
+		if (IsLocallyControlled()) {
+			GetSEOAbilitySystemComponent()->AbilityInputTagPressed(GameplayTagsCollection::GameplayEvent_Death);
+			//GetSEOAbilitySystemComponent()->AddLooseGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked);
+			GetSEOAbilitySystemComponent()->AddLooseGameplayTag(GameplayTagsCollection::Status_Death);
+		}
+	}
 }
 
 UAbilitySystemComponent* AShootEachOtherCharacter::GetAbilitySystemComponent() const

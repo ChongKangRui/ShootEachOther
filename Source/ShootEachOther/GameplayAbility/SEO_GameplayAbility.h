@@ -29,10 +29,8 @@ UCLASS()
 class SHOOTEACHOTHER_API USEO_GameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
-	
 
 public:
-	
 	UFUNCTION(BlueprintPure, Category = "SEO|Ability")
 	const UWeaponInstance* GetEquippedWeaponInstance() const;
 
@@ -53,9 +51,9 @@ public:
 
 	EAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; };
 
+public:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<UGameplayEffect> DamageGE;
-
 
 protected:
 	UWeaponInstance* GetEquippedWeaponInstance();
@@ -63,6 +61,7 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ApplyDamageToTarget(const float Damage, AActor* HitActor);
 
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAbilityActivationPolicy ActivationPolicy;
 

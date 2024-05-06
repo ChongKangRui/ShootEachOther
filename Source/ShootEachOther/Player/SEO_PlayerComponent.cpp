@@ -168,9 +168,9 @@ void USEO_PlayerComponent::Input_AbilityTagReleased(FGameplayTag tag)
 
 }
 
-void USEO_PlayerComponent::SetNativeInputEnable(bool Disable)
+void USEO_PlayerComponent::SetNativeInputEnable(bool Enable)
 {
-	DisableNativeInput = Disable;
+	DisableNativeInput = !Enable;
 }
 
 

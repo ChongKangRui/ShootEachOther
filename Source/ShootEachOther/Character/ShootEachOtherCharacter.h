@@ -48,6 +48,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Character")
 	AAIBotController* GetBotController() const;
 
+	UFUNCTION(BlueprintCallable, NetMulticast, unreliable, Category = "Character")
+	void OnCharacterDeath();
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	/** Returns FirstPersonCameraComponent subobject **/
 	APlayerCameraManager* GetFirstPersonCameraManager() const;

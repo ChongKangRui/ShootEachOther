@@ -18,8 +18,6 @@ void USEO_AttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 void USEO_AttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(USEO_AttributeSet, Health, OldHealth);
-
-	UE_LOG(LogTemp, Warning, TEXT("ONReppppppp health"));
 }
 
 void USEO_AttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldHealth)

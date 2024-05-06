@@ -8,6 +8,7 @@
 #include "Weapon/WeaponInstance.h"
 #include "Weapon/WeaponBase.h"
 #include "Weapon/WeaponData.h"
+#include "SEO_AttributeSet.h"
 #include "Player/SEO_PlayerState.h"
 
 void USEO_GlobalFunctionLibrary::SEO_Log(const AActor* actor, const ELogType type, FString message)
@@ -44,7 +45,7 @@ void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubcla
 {
 	/*Apply damage gameplay effect to target*/
 	if (HitActor) {
-		const AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
+		AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
 		const AShootEachOtherCharacter* DamageSource = Cast<AShootEachOtherCharacter>(Causer);
 		if (!Target || !DamageSource) {
 			USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Invalid Damage Target/Causer");
@@ -71,6 +72,12 @@ void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubcla
 				spec.SetSetByCallerMagnitude(GameplayTagsCollection::WeaponDamage, -Damage);
 				//Finally we apply gameplay effect to target
 				asc->ApplyGameplayEffectSpecToTarget(spec, TargetASC);
+				
+				if (const USEO_AttributeSet* EnemyAttribute = Cast<USEO_AttributeSet>(TargetASC->GetAttributeSet(USEO_AttributeSet::StaticClass()))) {
+					if (EnemyAttribute->GetHealth() <= 0) {
+						Target->OnCharacterDeath();
+					}
+				}
 				return;
 			}
 		}
