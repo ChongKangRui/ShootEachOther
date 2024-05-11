@@ -21,7 +21,7 @@ enum class EWeaponType : uint8 {
     /*Rifle/Machinegun*/
     Primary_Rifle_MP5,
     Primary_Rifle_Tavor_TAR_21,
-    Primary_MachineGun_M249,
+    Primary_Machine_Gun_M249,
     /*Sniper*/
     Primary_Sniper_L42A1,
     Primary_Anti_Mat_Rifle,

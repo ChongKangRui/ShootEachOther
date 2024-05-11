@@ -60,7 +60,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<const class USEO_AttributeSet> AttributeSet;
 
-	int OwningMoney = 2000;
+	int OwningMoney = 100000000;
 private:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 private:

@@ -9,6 +9,8 @@
 #include "Weapon/WeaponBase.h"
 #include "Weapon/WeaponData.h"
 #include "SEO_AttributeSet.h"
+#include "AI/AIBotController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Player/SEO_PlayerState.h"
 
 void USEO_GlobalFunctionLibrary::SEO_Log(const AActor* actor, const ELogType type, FString message)
@@ -46,7 +48,7 @@ void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubcla
 	/*Apply damage gameplay effect to target*/
 	if (HitActor) {
 		AShootEachOtherCharacter* Target = Cast<AShootEachOtherCharacter>(HitActor);
-		const AShootEachOtherCharacter* DamageSource = Cast<AShootEachOtherCharacter>(Causer);
+		AShootEachOtherCharacter* DamageSource = Cast<AShootEachOtherCharacter>(Causer);
 		if (!Target || !DamageSource) {
 			USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Invalid Damage Target/Causer");
 			return;
@@ -58,7 +60,6 @@ void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubcla
 			USEOAbilitySystemComponent* asc = DamageSource->GetSEOAbilitySystemComponent();
 			FGameplayEffectSpecHandle DamageEffectHandle = asc->MakeOutgoingSpec(DamageGE, 1,asc->MakeEffectContext());
 
-			
 			if (!HasFriendlyFire) {
 				if (Target->GetSEOPlayerState()->GetGenericTeamId() == DamageSource->GetSEOPlayerState()->GetGenericTeamId()) {
 					USEO_GlobalFunctionLibrary::SEO_Log(Causer, ELogType::Warning, "Is the same id");
@@ -76,6 +77,14 @@ void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubcla
 				if (const USEO_AttributeSet* EnemyAttribute = Cast<USEO_AttributeSet>(TargetASC->GetAttributeSet(USEO_AttributeSet::StaticClass()))) {
 					if (EnemyAttribute->GetHealth() <= 0) {
 						Target->OnCharacterDeath();
+						
+						//Ask bot to clear target
+						if (DamageSource->GetPlayerState()->IsABot()) {
+							DamageSource->GetBotController()->GetBlackboardComponent()->ClearValue("Target");
+						}
+						else{
+							DamageSource->GetSEOPlayerState()->AddOwningMoney(500);
+						}
 					}
 				}
 				return;

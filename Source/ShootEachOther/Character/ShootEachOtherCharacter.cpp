@@ -47,17 +47,13 @@ AAIBotController* AShootEachOtherCharacter::GetBotController() const
 
 void AShootEachOtherCharacter::OnCharacterDeath_Implementation()
 {
-	if (GetPlayerState()->IsABot()) {
-		if(HasAuthority())
-			GetBotController()->StopMovement();
-	}
-	else {
-		if (IsLocallyControlled()) {
-			GetSEOAbilitySystemComponent()->AbilityInputTagPressed(GameplayTagsCollection::GameplayEvent_Death);
+	
+		//if (IsLocallyControlled()) {
+	GetSEOAbilitySystemComponent()->AbilityInputTagPressed(GameplayTagsCollection::GameplayEvent_Death);
 			//GetSEOAbilitySystemComponent()->AddLooseGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked);
-			GetSEOAbilitySystemComponent()->AddLooseGameplayTag(GameplayTagsCollection::Status_Death);
-		}
-	}
+	GetSEOAbilitySystemComponent()->AddLooseGameplayTag(GameplayTagsCollection::Status_Death);
+	//}
+	
 }
 
 UAbilitySystemComponent* AShootEachOtherCharacter::GetAbilitySystemComponent() const

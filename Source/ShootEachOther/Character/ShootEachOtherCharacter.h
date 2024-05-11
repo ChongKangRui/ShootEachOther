@@ -58,5 +58,9 @@ public:
 public:
 	UPROPERTY(BlueprintReadOnly)
 	FRotator AIRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool DebugStopShoot = false;
+
 };
 

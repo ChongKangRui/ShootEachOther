@@ -9,14 +9,13 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class SHOOTEACHOTHER_API UBTService_Shoot : public UBTService_BlackboardBase
 {
 	GENERATED_BODY()
 
-
 public:
-	UBTService_Shoot(const FObjectInitializer& ObjectInitializer);
+	UBTService_Shoot(/*const FObjectInitializer& ObjectInitializer*/);
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
@@ -25,7 +24,6 @@ public:
 	FBlackboardKeySelector Target;
 
 protected:
-	virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	
 private:

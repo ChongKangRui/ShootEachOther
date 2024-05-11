@@ -2,6 +2,7 @@
 
 
 #include "AIBotController.h"
+#include "SEO_AttributeSet.h"
 #include "GameplayAbility/SEOAbilitySystemComponent.h"
 #include "GameplayAbility/SEO_AbilitySet.h"
 #include "Character/SEOPawnData.h"
@@ -28,7 +29,7 @@ AAIBotController::AAIBotController()
 	MyPerceptionComponent->ConfigureSense(*SightConfig);
 	MyPerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 
-	
+
 }
 
 void AAIBotController::BeginPlay()
@@ -85,7 +86,7 @@ void AAIBotController::OnPossess(APawn* PawnToProcess)
 
 	//Add Perception Updated function
 	MyPerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AAIBotController::OnPerceptionUpdated);
-	
+
 }
 
 ETeamAttitude::Type AAIBotController::GetTeamAttitudeTowards(const AActor& actor) const
@@ -118,13 +119,23 @@ void AAIBotController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
 	for (const auto& Actor : UpdatedActors)
 	{
-		if (Actor && Actor->IsA<ACharacter>())
-		{
-			if (!GetBlackboardComponent()->GetValueAsObject("Target")) {
-				
-				Target = Actor;
-				GetBlackboardComponent()->SetValueAsObject("Target", Actor);
+		if (!Actor)
+			continue;
+
+		AShootEachOtherCharacter* character = Cast<AShootEachOtherCharacter>(Actor);
+		if (!character)
+			continue;
+
+		if (!GetBlackboardComponent()->GetValueAsObject("Target")) {
+			if (const USEO_AttributeSet* TargetAttribute = Cast<USEO_AttributeSet>(character->GetAbilitySystemComponent()->GetAttributeSet(USEO_AttributeSet::StaticClass()))) {
+				if (TargetAttribute->GetHealth() <= 0)
+					continue;
+				else {
+					Target = Actor;
+					GetBlackboardComponent()->SetValueAsObject("Target", Actor);
+				}
 			}
 		}
+
 	}
 }

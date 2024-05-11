@@ -12,31 +12,26 @@
 #include "AIController.h"
 
 
-UBTService_Shoot::UBTService_Shoot(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+UBTService_Shoot::UBTService_Shoot() //: Super(ObjectInitializer)
 {
     NodeName = "Shoot";
+    bCreateNodeInstance = true;
 }
 
 
-
-void UBTService_Shoot::InitializeFromAsset(UBehaviorTree& Asset)
-{
-    Super::InitializeFromAsset(Asset);
-    
-}
 
 void UBTService_Shoot::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
-
+  
     if (!SelfCharacter) {
         SelfCharacter = Cast<AShootEachOtherCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(selfActor.SelectedKeyName));
-       
     }
+    
     if (!Enemy) {
         Enemy = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(Target.SelectedKeyName));
     }
-
+  
     FVector DirectionToTarget = Enemy->GetActorLocation() - SelfCharacter->GetActorLocation();
     FVector DirectionToTargetNormalize = DirectionToTarget.GetSafeNormal();
     
@@ -50,8 +45,10 @@ void UBTService_Shoot::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
     SelfCharacter->AIRotation = FinalRotation;
 
     if (SelfCharacter->GetSEOAbilitySystemComponent()) {
-        UE_LOG(LogTemp, Error, TEXT("AIShoot"))
+
         SelfCharacter->GetSEOAbilitySystemComponent()->AbilityInputTagPressed(GameplayTagsCollection::Input_Shoot);
         SelfCharacter->GetSEOAbilitySystemComponent()->AbilityInputTagPressed(GameplayTagsCollection::Input_Shoot_Auto);
+
     }
+
 }
