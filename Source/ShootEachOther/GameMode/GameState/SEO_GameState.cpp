@@ -37,7 +37,6 @@ TArray<FTeamInfo> ASEO_GameState::GetTeamsInfo() const
 
 FTeamInfo ASEO_GameState::GetTeamInfo(int TeamID) const
 {
-	
 	for (const FTeamInfo teamInfo : TeamInfo) {
 		if (teamInfo.TeamID == TeamID) {
 			return teamInfo;
@@ -49,6 +48,23 @@ FTeamInfo ASEO_GameState::GetTeamInfo(int TeamID) const
 FMatchSetting ASEO_GameState::GetMatchSetting() const
 {
 	return MatchSetting;
+}
+
+void ASEO_GameState::ResetAliveState()
+{
+	for (FTeamInfo& teamInfo : TeamInfo) {
+		teamInfo.AliveMember = teamInfo.GetMemberAmount();
+	}
+}
+
+void ASEO_GameState::DeductTeamAlive(int32 TeamID)
+{
+	for (FTeamInfo& teamInfo : TeamInfo) {
+		if (teamInfo.TeamID == TeamID) {
+			teamInfo.AliveMember--;
+			break;
+		}
+	}
 }
 
 void ASEO_GameState::CreateTeam_Implementation(int32 TeamID)

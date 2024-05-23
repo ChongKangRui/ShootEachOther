@@ -23,7 +23,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<TObjectPtr<ASEO_PlayerState>> Players;
-
+	
+	int AliveMember = 0;
 	FLinearColor TeamColor;
 
 	/*Mainly refering to member amount, not the length of the team*/
@@ -101,11 +102,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FTeamInfo GetTeamInfo(int TeamID) const;
 
+	UFUNCTION(BlueprintCallable)
+	void ResetAliveState();
+
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void AddPlayerToTeam(ASEO_PlayerState* pc, int32 TeamID, int index = -1);
 
 	UFUNCTION(Server, Reliable)
 	void CreateTeam(int32 TeamID);
+
+	void DeductTeamAlive(int32 TeamID);
 
 protected:
 	void BeginPlay() override;

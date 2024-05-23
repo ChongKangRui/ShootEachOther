@@ -6,13 +6,15 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Player/SEO_PlayerComponent.h"
+#include "Player/ShootEachOtherPlayerController.h"
+#include "Player/SEO_PlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
-#include "Player/ShootEachOtherPlayerController.h"
-#include "Player/SEO_PlayerState.h"
 #include "AI/AIBotController.h"
+#include "GameMode/GameState/SEO_GameState.h"
+#include "GameMode/ShootEachOtherGameMode.h"
 #include "GameplayTagCollection.h"
 #include "SEO_GlobalFunctionLibrary.h"
 
@@ -47,13 +49,19 @@ AAIBotController* AShootEachOtherCharacter::GetBotController() const
 
 void AShootEachOtherCharacter::OnCharacterDeath_Implementation()
 {
-	
-		//if (IsLocallyControlled()) {
 	GetSEOAbilitySystemComponent()->AbilityInputTagPressed(GameplayTagsCollection::GameplayEvent_Death);
-			//GetSEOAbilitySystemComponent()->AddLooseGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked);
 	GetSEOAbilitySystemComponent()->AddLooseGameplayTag(GameplayTagsCollection::Status_Death);
-	//}
-	
+
+	ASEO_GameState* GS = Cast<ASEO_GameState>(GetWorld()->GetGameState());
+	GS->DeductTeamAlive(GetSEOPlayerState()->GetTeamID());
+	UE_LOG(LogTemp, Error, TEXT("on character death"));
+	if (HasAuthority()) {
+		AShootEachOtherGameMode* GM = Cast<AShootEachOtherGameMode>(GetWorld()->GetAuthGameMode());
+		GM->CheckIfRoundEnd();
+	}
+	else {
+
+	}
 }
 
 UAbilitySystemComponent* AShootEachOtherCharacter::GetAbilitySystemComponent() const

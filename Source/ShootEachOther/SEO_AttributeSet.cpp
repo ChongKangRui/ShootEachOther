@@ -4,7 +4,7 @@
 #include "SEO_AttributeSet.h"
 #include "Net/UnrealNetwork.h"
 
-USEO_AttributeSet::USEO_AttributeSet() : Health(100.0f)
+USEO_AttributeSet::USEO_AttributeSet() : Health(100.0f), MaxHealth(100.0f)
 {
 }
 

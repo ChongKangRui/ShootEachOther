@@ -48,7 +48,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Character")
 	AAIBotController* GetBotController() const;
 
-	UFUNCTION(BlueprintCallable, NetMulticast, unreliable, Category = "Character")
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character")
 	void OnCharacterDeath();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;

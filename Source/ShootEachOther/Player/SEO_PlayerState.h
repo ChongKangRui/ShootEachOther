@@ -25,24 +25,28 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UFUNCTION(BlueprintCallable, Category = "Ability System")
 	USEOAbilitySystemComponent* GetSEOAbilitySystemComponent() const { return AbilitySystemComponent; }
-
-	/*Team related*/
-	UFUNCTION(BlueprintPure, Category = "Team")
-	bool GetIsReady() const;
-	UFUNCTION(BlueprintCallable,Server, Reliable, Category = "Team")
-	void SetIsReady(const bool IsReady);
-
 	/*Shop System*/
 	UFUNCTION(BlueprintPure, Category = "Shop System")
 	int GetOwningMoney() const;
-	/*Failed if money goes below 0 after deduct the value*/
-	UFUNCTION(BlueprintCallable, Category = "Shop System")
-	bool DeductOwningMoney(const int value);
-	UFUNCTION(BlueprintCallable, Category = "Shop System")
-	bool AddOwningMoney(const int value);
+
+	UFUNCTION(BlueprintPure, Category = "Team")
+	bool GetIsReady() const;
 
 	UFUNCTION(BlueprintPure, Category = "Team")
 	int32 GetTeamID() const;
+
+	/*Failed if money goes below 0 after deduct the value*/
+	UFUNCTION(BlueprintCallable, Category = "Shop System")
+	bool DeductOwningMoney(const int value);
+
+	UFUNCTION(BlueprintCallable, Category = "Shop System")
+	bool AddOwningMoney(const int value);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Team")
+	void SetIsReady(const bool IsReady);
+
+	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
+	void ResetStatus();
 	
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;

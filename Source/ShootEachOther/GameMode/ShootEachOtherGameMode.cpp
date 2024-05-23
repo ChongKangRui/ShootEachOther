@@ -5,6 +5,7 @@
 #include "Player/SEO_PlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameState/SEO_GameState.h"
+#include "GameplayTagCollection.h"
 
 AShootEachOtherGameMode::AShootEachOtherGameMode()
 {
@@ -13,8 +14,8 @@ AShootEachOtherGameMode::AShootEachOtherGameMode()
 void AShootEachOtherGameMode::PostLogin(APlayerController* pc)
 {
 	Super::PostLogin(pc);
-	if (!gameState) {
-		gameState = GetGameState<ASEO_GameState>();
+	if (!SEO_GameState) {
+		SEO_GameState = GetGameState<ASEO_GameState>();
 		ServerCreateTeam();
 	}
 
@@ -23,11 +24,11 @@ void AShootEachOtherGameMode::PostLogin(APlayerController* pc)
 
 void AShootEachOtherGameMode::ServerCreateTeam()
 {
-	gameState->CreateTeam(GetTeamIDFromTeamEnum(ETeamType::TeamA));
-	gameState->CreateTeam(GetTeamIDFromTeamEnum(ETeamType::TeamB));
+	SEO_GameState->CreateTeam(GetTeamIDFromTeamEnum(ETeamType::TeamA));
+	SEO_GameState->CreateTeam(GetTeamIDFromTeamEnum(ETeamType::TeamB));
 
 	
-		switch (gameState->GetMatchSetting().MatchType)
+		switch (SEO_GameState->GetMatchSetting().MatchType)
 		{
 		case EMatchType::FiveRoundThreeWin:
 			//gameState->CreateTeam(GetTeamIDFromTeamEnum(ETeamType::TeamA));
@@ -46,7 +47,7 @@ void AShootEachOtherGameMode::AssignTeamToPlayer(APlayerController* pc, int32 Te
 	if (ASEO_PlayerState* ps = pc->GetPlayerState<ASEO_PlayerState>()) {
 		ps->SetGenericTeamId(FGenericTeamId(TeamId));
 
-		gameState->AddPlayerToTeam(ps, TeamId);
+		SEO_GameState->AddPlayerToTeam(ps, TeamId);
 		OnTeamIDAssigned.Broadcast(pc, TeamId);
 	}
 	else {
@@ -58,9 +59,9 @@ void AShootEachOtherGameMode::AssignTeamToPlayer(APlayerController* pc, int32 Te
 
 int32 AShootEachOtherGameMode::GetLeastMemberOfTeam() const
 {
-	if (gameState) {
-		int TeamALength = gameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamA)).GetMemberAmount();
-		int TeamBLength = gameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamB)).GetMemberAmount();
+	if (SEO_GameState) {
+		int TeamALength = SEO_GameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamA)).GetMemberAmount();
+		int TeamBLength = SEO_GameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamB)).GetMemberAmount();
 
 		UE_LOG(LogTemp, Error, TEXT("Team Length, %i, %i"), TeamALength, TeamBLength);
 
@@ -74,6 +75,25 @@ int32 AShootEachOtherGameMode::GetLeastMemberOfTeam() const
 		}
 	}
 	return -1;
+}
+
+void AShootEachOtherGameMode::CheckIfRoundEnd()
+{
+	if (SEO_GameState) {
+		const FTeamInfo TeamA = SEO_GameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamA));
+		const FTeamInfo TeamB = SEO_GameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamB));
+		
+		if (TeamA.AliveMember <= 0) {
+			TeamMatchResultRecord.Add(TeamB.TeamID);
+			OnRoundEnded.Broadcast(GetTeamEnumFromID(TeamB.TeamID));
+		}
+		if (TeamB.AliveMember <= 0) {
+			TeamMatchResultRecord.Add(TeamA.TeamID);
+			OnRoundEnded.Broadcast(GetTeamEnumFromID(TeamA.TeamID));
+		}
+
+		
+	}
 }
 
 int32 AShootEachOtherGameMode::GetTeamIDFromTeamEnum(const ETeamType& team) const

@@ -2,14 +2,11 @@
 
 
 #include "SEO_PlayerState.h"
-//#include "GameplayAbility/SEOAbilitySystemComponent.h"
-
+#include "GameplayTagCollection.h"
 #include "Player/SEO_PlayerComponent.h"
 #include "SEO_AttributeSet.h"
 #include "SEO_GlobalFunctionLibrary.h"
-
 #include "GameMode/ShootEachOtherGameMode.h"
-
 #include "Net/UnrealNetwork.h"
 
 
@@ -19,8 +16,6 @@ ASEO_PlayerState::ASEO_PlayerState(const FObjectInitializer& ObjectInitializer)
 	AbilitySystemComponent->SetIsReplicated(true);
 
 	AttributeSet = CreateDefaultSubobject<USEO_AttributeSet>(TEXT("AttributeSet"));
-	
-
 }
 
 void ASEO_PlayerState::BeginPlay()
@@ -58,6 +53,9 @@ void ASEO_PlayerState::SetIsReady_Implementation(const bool IsReady)
 		if (sGM)
 			sGM->BeginNewRound();
 	}
+
+	
+
 }
 
 void ASEO_PlayerState::SetGenericTeamId(const FGenericTeamId& NewTeamID)
@@ -73,6 +71,33 @@ FGenericTeamId ASEO_PlayerState::GetGenericTeamId() const
 int32 ASEO_PlayerState::GetTeamID() const
 {
 	return TeamId;
+}
+
+void ASEO_PlayerState::ResetStatus_Implementation()
+{
+	if (HasAuthority()) {
+		auto GameplayEffectClass = StaticLoadClass(UGameplayEffect::StaticClass(), nullptr, TEXT("/Game/Blueprint/GameplayAbilitySystem/GameplayEffect/GE_ResetHealth.GE_ResetHealth_C"));
+		FGameplayEffectSpecHandle DamageEffectHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffectClass, 1, AbilitySystemComponent->MakeEffectContext());
+
+		if (!GameplayEffectClass) {
+			UE_LOG(LogTemp, Error, TEXT("Invalid Gameplay Effect Class."));
+			return;
+		}
+		if (DamageEffectHandle.IsValid()) {
+			//We wan to set the damage during runtime based on weapon data from datatable.
+			FGameplayEffectSpec& spec = *DamageEffectHandle.Data.Get();
+			spec.SetSetByCallerMagnitude(GameplayTagsCollection::GameplayEvent_Reset, AttributeSet->MaxHealth.GetCurrentValue());
+			//Finally we apply gameplay effect to target
+			UE_LOG(LogTemp, Error, TEXT("apply gameplay effect success"));
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(spec);
+		}
+	}
+	if (GetOwningController()) {
+		if (GetOwningController()->IsLocalPlayerController()) {
+			AbilitySystemComponent->RemoveLooseGameplayTag(GameplayTagsCollection::Status_Death);
+			AbilitySystemComponent->RemoveLooseGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked);
+		}
+	}
 }
 
 int ASEO_PlayerState::GetOwningMoney() const

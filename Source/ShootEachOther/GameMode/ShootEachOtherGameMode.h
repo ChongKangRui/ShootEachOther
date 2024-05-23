@@ -11,8 +11,8 @@
 
 class AShootEachOtherPlayerController;
 
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTeamIDAssigned, APlayerController*, PC, int32, ID);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundEnded, ETeamType, WinningTeam);
 UCLASS(minimalapi)
 class AShootEachOtherGameMode : public AGameMode
 {
@@ -21,7 +21,7 @@ class AShootEachOtherGameMode : public AGameMode
 public:
 	AShootEachOtherGameMode();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void BeginNewRound();
 
 	UFUNCTION(BlueprintPure)
@@ -30,26 +30,28 @@ public:
 	UFUNCTION(BlueprintPure)
 	ETeamType GetTeamEnumFromID(const int32& genericid) const;
 
+	void CheckIfRoundEnd();
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnTeamIDAssigned OnTeamIDAssigned;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnRoundEnded OnRoundEnded;
 protected:
 	virtual void PostLogin(APlayerController* pc) override;
 
 	void ServerCreateTeam();
 	void AssignTeamToPlayer(APlayerController* pc, int32 TeamId);
 	int32 GetLeastMemberOfTeam() const;
-protected:
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UMatchInfo> MatchInformation;
 
+protected:
 	/*Winning team will be added into this*/
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FGenericTeamId> TeamMatchResultRecord;
 
-private:
-	class ASEO_GameState* gameState;
+	UPROPERTY(BlueprintReadOnly)
+	class ASEO_GameState* SEO_GameState;
+	
 
 };
 
