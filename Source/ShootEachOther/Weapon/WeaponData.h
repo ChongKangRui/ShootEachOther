@@ -18,6 +18,7 @@ class AWeaponBase;
 
 UENUM(BlueprintType)
 enum class EWeaponType : uint8 {
+    None,
     /*Rifle/Machinegun*/
     Primary_Rifle_MP5,
     Primary_Rifle_Tavor_TAR_21,

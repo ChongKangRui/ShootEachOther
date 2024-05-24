@@ -63,16 +63,6 @@ void ASEO_PlayerState::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 	TeamId = NewTeamID;
 }
 
-FGenericTeamId ASEO_PlayerState::GetGenericTeamId() const
-{
-	return TeamId;
-}
-
-int32 ASEO_PlayerState::GetTeamID() const
-{
-	return TeamId;
-}
-
 void ASEO_PlayerState::ResetStatus_Implementation()
 {
 	if (HasAuthority()) {
@@ -98,6 +88,16 @@ void ASEO_PlayerState::ResetStatus_Implementation()
 			AbilitySystemComponent->RemoveLooseGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked);
 		}
 	}
+}
+
+FGenericTeamId ASEO_PlayerState::GetGenericTeamId() const
+{
+	return TeamId;
+}
+
+int32 ASEO_PlayerState::GetTeamID() const
+{
+	return TeamId;
 }
 
 int ASEO_PlayerState::GetOwningMoney() const

@@ -57,6 +57,25 @@ void AShootEachOtherGameMode::AssignTeamToPlayer(APlayerController* pc, int32 Te
 
 }
 
+void AShootEachOtherGameMode::CheckIfRoundEnd()
+{
+	if (SEO_GameState) {
+		const FTeamInfo TeamA = SEO_GameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamA));
+		const FTeamInfo TeamB = SEO_GameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamB));
+
+		if (TeamA.AliveMember <= 0) {
+			TeamMatchResultRecord.Add(GetTeamEnumFromID(TeamB.TeamID));
+			OnRoundEnded.Broadcast(GetTeamEnumFromID(TeamB.TeamID));
+		}
+		if (TeamB.AliveMember <= 0) {
+			TeamMatchResultRecord.Add(GetTeamEnumFromID(TeamA.TeamID));
+			OnRoundEnded.Broadcast(GetTeamEnumFromID(TeamA.TeamID));
+		}
+
+
+	}
+}
+
 int32 AShootEachOtherGameMode::GetLeastMemberOfTeam() const
 {
 	if (SEO_GameState) {
@@ -75,25 +94,6 @@ int32 AShootEachOtherGameMode::GetLeastMemberOfTeam() const
 		}
 	}
 	return -1;
-}
-
-void AShootEachOtherGameMode::CheckIfRoundEnd()
-{
-	if (SEO_GameState) {
-		const FTeamInfo TeamA = SEO_GameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamA));
-		const FTeamInfo TeamB = SEO_GameState->GetTeamInfo(GetTeamIDFromTeamEnum(ETeamType::TeamB));
-		
-		if (TeamA.AliveMember <= 0) {
-			TeamMatchResultRecord.Add(TeamB.TeamID);
-			OnRoundEnded.Broadcast(GetTeamEnumFromID(TeamB.TeamID));
-		}
-		if (TeamB.AliveMember <= 0) {
-			TeamMatchResultRecord.Add(TeamA.TeamID);
-			OnRoundEnded.Broadcast(GetTeamEnumFromID(TeamA.TeamID));
-		}
-
-		
-	}
 }
 
 int32 AShootEachOtherGameMode::GetTeamIDFromTeamEnum(const ETeamType& team) const

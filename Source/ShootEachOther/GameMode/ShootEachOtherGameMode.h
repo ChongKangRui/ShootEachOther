@@ -47,7 +47,7 @@ protected:
 protected:
 	/*Winning team will be added into this*/
 	UPROPERTY(BlueprintReadOnly)
-	TArray<FGenericTeamId> TeamMatchResultRecord;
+	TArray<ETeamType> TeamMatchResultRecord;
 
 	UPROPERTY(BlueprintReadOnly)
 	class ASEO_GameState* SEO_GameState;
