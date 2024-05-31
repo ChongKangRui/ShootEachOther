@@ -9,18 +9,19 @@
 #include "GameMode/ShootEachOtherGameMode.h"
 #include "Net/UnrealNetwork.h"
 
-
 ASEO_PlayerState::ASEO_PlayerState(const FObjectInitializer& ObjectInitializer)
 {
 	AbilitySystemComponent = ObjectInitializer.CreateDefaultSubobject<USEOAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 
 	AttributeSet = CreateDefaultSubobject<USEO_AttributeSet>(TEXT("AttributeSet"));
+
 }
 
 void ASEO_PlayerState::BeginPlay()
 {
 	Super::BeginPlay();
+	SetPlayerName("Unknown");
 	AbilitySystemComponent->AbilityActorInfo.Get()->OwnerActor = this;
 
 	if (AGameModeBase* GM = GetWorld()->GetAuthGameMode()) {
@@ -33,6 +34,7 @@ void ASEO_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ThisClass, Ready);
+	DOREPLIFETIME(ThisClass, SEOPlayerName);
 }
 
 UAbilitySystemComponent* ASEO_PlayerState::GetAbilitySystemComponent() const
@@ -43,6 +45,11 @@ UAbilitySystemComponent* ASEO_PlayerState::GetAbilitySystemComponent() const
 bool ASEO_PlayerState::GetIsReady() const
 {
 	return Ready;
+}
+
+FString ASEO_PlayerState::GetSEOPlayerName() const
+{
+	return SEOPlayerName;
 }
 
 void ASEO_PlayerState::SetIsReady_Implementation(const bool IsReady)
@@ -58,9 +65,9 @@ void ASEO_PlayerState::SetIsReady_Implementation(const bool IsReady)
 
 }
 
-void ASEO_PlayerState::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+void ASEO_PlayerState::SetPlayerName_Implementation(const FString& Name)
 {
-	TeamId = NewTeamID;
+	SEOPlayerName = Name;
 }
 
 void ASEO_PlayerState::ResetStatus_Implementation()
@@ -82,12 +89,19 @@ void ASEO_PlayerState::ResetStatus_Implementation()
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(spec);
 		}
 	}
-	if (GetOwningController()) {
-		if (GetOwningController()->IsLocalPlayerController()) {
-			AbilitySystemComponent->RemoveLooseGameplayTag(GameplayTagsCollection::Status_Death);
-			AbilitySystemComponent->RemoveLooseGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked);
-		}
-	}
+	
+	UE_LOG(LogTemp, Error, TEXT("remove control tag"));
+	AbilitySystemComponent->RemoveLooseGameplayTag(GameplayTagsCollection::Status_Death);
+	AbilitySystemComponent->RemoveLooseGameplayTag(GameplayTagsCollection::TAG_Gameplay_AbilityInputBlocked);
+		
+		
+	
+}
+
+void ASEO_PlayerState::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	if(NewTeamID)
+		TeamId = NewTeamID;
 }
 
 FGenericTeamId ASEO_PlayerState::GetGenericTeamId() const
@@ -97,7 +111,10 @@ FGenericTeamId ASEO_PlayerState::GetGenericTeamId() const
 
 int32 ASEO_PlayerState::GetTeamID() const
 {
-	return TeamId;
+	if (TeamId)
+		return TeamId;
+	else
+		return -1;
 }
 
 int ASEO_PlayerState::GetOwningMoney() const
@@ -120,6 +137,8 @@ bool ASEO_PlayerState::AddOwningMoney(const int value)
 	OwningMoney += value;
 	return true;
 }
+
+
 
 
 

@@ -14,16 +14,15 @@
 
 APortal::APortal()
 {
-
 	PrimaryActorTick.bCanEverTick = true;
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
 	SetRootComponent(SceneRoot);
 
 	SceneCaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneRenderCapture2D"));
-	SceneCaptureComponent->AttachToComponent(SceneRoot,FAttachmentTransformRules::KeepRelativeTransform);
+	SceneCaptureComponent->SetupAttachment(SceneRoot);
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxDetection"));
-	BoxComponent->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
+	BoxComponent->SetupAttachment(SceneRoot);
 
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &APortal::OnBeginOverlap);
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &APortal::OnEndOverlap);

@@ -3,16 +3,13 @@
 
 #include "BotSpawnComponent.h"
 #include "GameMode/ShootEachOtherGameMode.h"
-
 #include "AIController.h"
 #include "SEO_GameState.h"
-
 #include "Player/SEO_PlayerState.h"
-
 
 UBotSpawnComponent::UBotSpawnComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 void UBotSpawnComponent::BeginPlay()
@@ -35,7 +32,8 @@ void UBotSpawnComponent::AddOneBot(const int32 TeamID, const int Index)
 			
 			ps->SetGenericTeamId(FGenericTeamId(TeamID));
 			owner->AddPlayerToTeam(ps, TeamID, Index);
-
+			ps->SetIsReady(true);
+			ps->SetPlayerName("Bot");
 			UE_LOG(LogTemp, Error, TEXT("Add Bot Success"));
 		}
 	}
@@ -44,7 +42,11 @@ void UBotSpawnComponent::AddOneBot(const int32 TeamID, const int Index)
 
 void UBotSpawnComponent::RemoveBot(const int32 TeamID, const int Index)
 {
-	owner->GetTeamInfo(TeamID).Players[Index]->GetOwningController()->Destroy();
+	AController* ToRemoveAI = owner->GetTeamInfo(TeamID).Players[Index]->GetOwningController();
+	if (ToRemoveAI->GetPawn())
+		ToRemoveAI->GetPawn()->Destroy();
+
+	ToRemoveAI->Destroy();
 }
 
 

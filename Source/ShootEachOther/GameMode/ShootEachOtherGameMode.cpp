@@ -42,12 +42,12 @@ void AShootEachOtherGameMode::ServerCreateTeam()
 	
 }
 
-void AShootEachOtherGameMode::AssignTeamToPlayer(APlayerController* pc, int32 TeamId)
+void AShootEachOtherGameMode::AssignTeamToPlayer(APlayerController* pc, int32 TeamId, int TeamIndex)
 {
 	if (ASEO_PlayerState* ps = pc->GetPlayerState<ASEO_PlayerState>()) {
 		ps->SetGenericTeamId(FGenericTeamId(TeamId));
 
-		SEO_GameState->AddPlayerToTeam(ps, TeamId);
+		SEO_GameState->AddPlayerToTeam(ps, TeamId, TeamIndex);
 		OnTeamIDAssigned.Broadcast(pc, TeamId);
 	}
 	else {
@@ -55,6 +55,12 @@ void AShootEachOtherGameMode::AssignTeamToPlayer(APlayerController* pc, int32 Te
 	}
 
 
+}
+
+void AShootEachOtherGameMode::ResetMatchSetting()
+{
+	TeamMatchResultRecord.Empty();
+	SEO_GameState->ResetAliveState();
 }
 
 void AShootEachOtherGameMode::CheckIfRoundEnd()

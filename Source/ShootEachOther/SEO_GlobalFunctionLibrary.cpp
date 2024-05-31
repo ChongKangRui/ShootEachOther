@@ -74,17 +74,20 @@ void USEO_GlobalFunctionLibrary::ApplyDamageToTarget(const float Damage, TSubcla
 				//Finally we apply gameplay effect to target
 				asc->ApplyGameplayEffectSpecToTarget(spec, TargetASC);
 				
-				if (const USEO_AttributeSet* EnemyAttribute = Cast<USEO_AttributeSet>(TargetASC->GetAttributeSet(USEO_AttributeSet::StaticClass()))) {
-					if (EnemyAttribute->GetHealth() <= 0) {
-						Target->OnCharacterDeath();
-						
-						//Ask bot to clear target
-						if (DamageSource->GetPlayerState()->IsABot()) {
-							DamageSource->GetBotController()->GetBlackboardComponent()->ClearValue("Target");
-						}
-						else{
-							if(!HasFriendlyFire)
-								DamageSource->GetSEOPlayerState()->AddOwningMoney(500);
+				if (!TargetASC->HasMatchingGameplayTag(GameplayTagsCollection::Status_Death)) {
+					if (const USEO_AttributeSet* EnemyAttribute = Cast<USEO_AttributeSet>(TargetASC->GetAttributeSet(USEO_AttributeSet::StaticClass()))) {
+						if (EnemyAttribute->GetHealth() <= 0) {
+							Target->OnCharacterDeath();
+
+							//Ask bot to clear target
+							if (DamageSource->GetPlayerState()->IsABot()) {
+							
+								DamageSource->GetBotController()->ClearTarget();
+							}
+							else {
+								if (!HasFriendlyFire)
+									DamageSource->GetSEOPlayerState()->AddOwningMoney(500);
+							}
 						}
 					}
 				}

@@ -67,6 +67,7 @@ protected:
 	UPROPERTY(Replicated)
 	FWeaponData DefaultsData;
 
+	UPROPERTY(Replicated)
 	EWeaponType WeaponType;
 
 	/*Use for grant ability in order to explicily clear input*/

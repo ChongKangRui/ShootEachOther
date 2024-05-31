@@ -76,9 +76,12 @@ void USGA_Shoot::StartWeaponTrace()
 
 				TArray<FHitResult> results;
 				FHitResult Hit = WeaponTrace(TraceStart, FinalTraceDirection, results, 0.0f, DebugDuration);
-
+				
 				/*Apply damage*/
-				ApplyDamageToTarget(data.Damage, Hit.GetActor());
+				if(Hit.BoneName == "head")
+					ApplyDamageToTarget(data.Damage*2, Hit.GetActor());
+				else
+					ApplyDamageToTarget(data.Damage, Hit.GetActor());
 
 				if(character->HasAuthority())
 					OnWeaponFired({Hit});

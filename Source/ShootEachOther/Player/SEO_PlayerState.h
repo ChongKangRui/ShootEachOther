@@ -33,6 +33,9 @@ public:
 	bool GetIsReady() const;
 
 	UFUNCTION(BlueprintPure, Category = "Team")
+	FString GetSEOPlayerName() const;
+
+	UFUNCTION(BlueprintPure, Category = "Team")
 	int32 GetTeamID() const;
 
 	/*Failed if money goes below 0 after deduct the value*/
@@ -44,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Team")
 	void SetIsReady(const bool IsReady);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Team")
+	void SetPlayerName(const FString& Name);
 
 	UFUNCTION(BlueprintCallable,NetMulticast, Reliable)
 	void ResetStatus();
@@ -57,6 +63,9 @@ protected:
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	FGenericTeamId TeamId;
+
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	FString SEOPlayerName;
 
 	UPROPERTY(Replicated)
 	bool Ready = false;

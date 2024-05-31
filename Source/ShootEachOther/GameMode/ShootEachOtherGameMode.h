@@ -24,6 +24,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void BeginNewRound();
 
+	UFUNCTION(BlueprintCallable)
+	void AssignTeamToPlayer(APlayerController* pc, int32 TeamId, int TeamIndex = -1);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetMatchSetting();
+
 	UFUNCTION(BlueprintPure)
 	int32 GetTeamIDFromTeamEnum(const ETeamType& team) const;
 
@@ -41,7 +47,7 @@ protected:
 	virtual void PostLogin(APlayerController* pc) override;
 
 	void ServerCreateTeam();
-	void AssignTeamToPlayer(APlayerController* pc, int32 TeamId);
+	
 	int32 GetLeastMemberOfTeam() const;
 
 protected:

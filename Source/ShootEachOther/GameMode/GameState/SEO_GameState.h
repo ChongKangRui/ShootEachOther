@@ -7,7 +7,7 @@
 #include "SEO_GameState.generated.h"
 
 /**
- * 
+ *
  */
 class ASEO_PlayerState;
 class UBotSpawnComponent;
@@ -23,7 +23,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<TObjectPtr<ASEO_PlayerState>> Players;
-	
+
 	int AliveMember = 0;
 	FLinearColor TeamColor;
 
@@ -36,13 +36,21 @@ public:
 		MemberAmount++;
 	}
 
-	void RemovePlayer(ASEO_PlayerState* pc) {
-		Players.Remove(pc);
+	void RemovePlayer(ASEO_PlayerState* ps) {
+	
+		for (int i = 0; i < Players.Num() - 1;i++) {
+			if (Players[i] == ps) {
+				Players[i] = nullptr;
+				MemberAmount--;
+				UE_LOG(LogTemp, Error, TEXT("REmove someone form team"));
+				return;
+			}
+		}
 	}
 
-	FTeamInfo() : TeamID(-1), TeamColor(), MemberAmount(0){
+	FTeamInfo() : TeamID(-1), TeamColor(), MemberAmount(0) {
 		Players.Init(nullptr, 4);
-		
+
 	}
 
 	FTeamInfo(int32 teamID, int TeamSize) : TeamID(teamID), TeamColor(), MemberAmount(0) {
@@ -78,7 +86,7 @@ public:
 	EMatchType MatchType = EMatchType::ThreeRoundTwoWin;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ShoppingTimeBeforeRoundBegin = 15.0f;
+	float ShoppingTimeBeforeRoundBegin = 5.0f;
 
 	FMatchSetting() {
 
@@ -89,7 +97,7 @@ UCLASS()
 class SHOOTEACHOTHER_API ASEO_GameState : public AGameState
 {
 	GENERATED_BODY()
-	
+
 public:
 	ASEO_GameState();
 

@@ -9,6 +9,7 @@
 #include "Character/ShootEachOtherCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTagCollection.h"
+#include "AI/AIBotController.h"
 #include "AIController.h"
 
 
@@ -28,11 +29,10 @@ void UBTService_Shoot::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
         SelfCharacter = Cast<AShootEachOtherCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(selfActor.SelectedKeyName));
     }
     
-    if (!Enemy) {
-        Enemy = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(Target.SelectedKeyName));
-    }
-  
-    FVector DirectionToTarget = Enemy->GetActorLocation() - SelfCharacter->GetActorLocation();
+    if (!SelfCharacter->GetBotController()->GetCurrentTarget())
+        return;
+    
+    FVector DirectionToTarget = SelfCharacter->GetBotController()->GetCurrentTarget()->GetActorLocation() - SelfCharacter->GetActorLocation();
     FVector DirectionToTargetNormalize = DirectionToTarget.GetSafeNormal();
     
     float YawRadian = FMath::Atan2(DirectionToTargetNormalize.Y, DirectionToTargetNormalize.X);

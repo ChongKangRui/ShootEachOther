@@ -3,6 +3,7 @@
 
 #include "SEO_GameState.h"
 #include "Player/SEOGameInstance.h"
+#include "Player/SEO_PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
 ASEO_GameState::ASEO_GameState()
@@ -75,33 +76,38 @@ void ASEO_GameState::CreateTeam_Implementation(int32 TeamID)
 void ASEO_GameState::AddPlayerToTeam_Implementation(ASEO_PlayerState* ps, int32 TeamID, int index)
 {
 	UE_LOG(LogTemp, Error, TEXT("teamid in, %i"), TeamID);
-	for (FTeamInfo& teamInfo : TeamInfo) {
-		if (teamInfo.TeamID == TeamID) {
 
-			if (!teamInfo.Players.Contains(ps)) {
-				if (index <= -1) {
-					for (int i = 0; i < teamInfo.Players.Num(); i++) {
-						if (!teamInfo.Players[i]) {
-							teamInfo.Players[i] = ps;
-							teamInfo.AddMemberAmount();
-							return;
-						}
+	for (FTeamInfo& teamInfo : TeamInfo) {
+
+		//Remove player from incorrect team
+		if (TeamID != teamInfo.TeamID) {
+			if (teamInfo.Players.Contains(ps))
+				teamInfo.RemovePlayer(ps);
+
+			continue;
+		}
+
+		//Assign player to team
+		if (!teamInfo.Players.Contains(ps)) {
+			if (index <= -1) {
+				for (int i = 0; i < teamInfo.Players.Num(); i++) {
+					if (!teamInfo.Players[i]) {
+						teamInfo.Players[i] = ps;
+						teamInfo.AddMemberAmount();
+						break;
 					}
 				}
-				else {
-					teamInfo.Players[index] = ps;
-					teamInfo.AddMemberAmount();
-				}
-
 			}
 			else {
-				UE_LOG(LogTemp, Error, TEXT("Already Contain Player"));
+				teamInfo.Players[index] = ps;
+				teamInfo.AddMemberAmount();
 			}
+
 		}
 		else {
-			UE_LOG(LogTemp, Error, TEXT("not valid team id"));
+			UE_LOG(LogTemp, Error, TEXT("Already Contain Player"));
 		}
-		
+
 	}
 }
 

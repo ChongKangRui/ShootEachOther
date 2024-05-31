@@ -28,8 +28,6 @@ AAIBotController::AAIBotController()
 	// Setup perception configuration
 	MyPerceptionComponent->ConfigureSense(*SightConfig);
 	MyPerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
-
-
 }
 
 void AAIBotController::BeginPlay()
@@ -46,9 +44,16 @@ void AAIBotController::Tick(float DeltaTime)
 		USEO_GlobalFunctionLibrary::SEO_Log(this, ELogType::Error, "Invalid AI Character Ref");
 		return;
 	}
-
 	if (USEOAbilitySystemComponent* asc = AI->GetSEOAbilitySystemComponent()) {
 		asc->ProcessAllAbility(DeltaTime);
+	}
+
+	if (Target) {
+		if (auto TargetASC = Target->GetSEOAbilitySystemComponent()) {
+			if (TargetASC->HasMatchingGameplayTag(GameplayTagsCollection::Status_Death)) {
+				ClearTarget();
+			}
+		}
 	}
 }
 
@@ -86,22 +91,24 @@ void AAIBotController::OnPossess(APawn* PawnToProcess)
 
 	//Add Perception Updated function
 	MyPerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AAIBotController::OnPerceptionUpdated);
-
 }
 
 ETeamAttitude::Type AAIBotController::GetTeamAttitudeTowards(const AActor& actor) const
 {
 	const AShootEachOtherCharacter* character = Cast<AShootEachOtherCharacter>(&actor);
-	if (!character)
+	if (!character || !SEO_PlayerState)
 		return ETeamAttitude::Neutral;
 
-	if (character->GetSEOPlayerState()->GetTeamID() == 0)
-		return ETeamAttitude::Hostile;
+	if(!character->GetSEOPlayerState())
+		return ETeamAttitude::Neutral;
 
-	if (character->GetSEOPlayerState()->GetTeamID() == SEO_PlayerState->GetTeamID())
+	if (character->GetSEOPlayerState()->GetTeamID() == SEO_PlayerState->GetTeamID()) {
 		return ETeamAttitude::Friendly;
+	}
 	else
 		return ETeamAttitude::Hostile;
+
+	return ETeamAttitude::Neutral;
 
 }
 
@@ -115,27 +122,39 @@ const AActor* AAIBotController::GetCurrentTarget() const
 	return Target;
 }
 
+void AAIBotController::ClearTarget()
+{
+	Target = nullptr;
+	GetBlackboardComponent()->ClearValue("Target");
+}
+
 void AAIBotController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	for (const auto& Actor : UpdatedActors)
-	{
-		if (!Actor)
-			continue;
+	if(!Target){
+		for (const auto& Actor : UpdatedActors)
+		{
+			if (!Actor)
+				continue;
 
-		AShootEachOtherCharacter* character = Cast<AShootEachOtherCharacter>(Actor);
-		if (!character)
-			continue;
+			AShootEachOtherCharacter* character = Cast<AShootEachOtherCharacter>(Actor);
+			if (!character)
+				continue;
 
-		if (!GetBlackboardComponent()->GetValueAsObject("Target")) {
-			if (const USEO_AttributeSet* TargetAttribute = Cast<USEO_AttributeSet>(character->GetAbilitySystemComponent()->GetAttributeSet(USEO_AttributeSet::StaticClass()))) {
-				if (TargetAttribute->GetHealth() <= 0)
-					continue;
-				else {
-					Target = Actor;
-					GetBlackboardComponent()->SetValueAsObject("Target", Actor);
+			if (GetBlackboardComponent()) {
+				if (!GetBlackboardComponent()->GetValueAsObject("Target")) {
+					if (const USEO_AttributeSet* TargetAttribute = Cast<USEO_AttributeSet>(character->GetAbilitySystemComponent()->GetAttributeSet(USEO_AttributeSet::StaticClass()))) {
+						if (TargetAttribute->GetHealth() <= 0)
+							continue;
+						else {
+							if (GetTeamAttitudeTowards(*character) == ETeamAttitude::Hostile) {
+								UE_LOG(LogTemp, Error, TEXT("%s 's Enemy is set to %s"), *GetPawn()->GetName(), *character->GetName());
+								GetBlackboardComponent()->SetValueAsObject("Target", character);
+								Target = character;
+							}
+						}
+					}
 				}
 			}
 		}
-
 	}
 }

@@ -14,21 +14,19 @@ AWeaponBase::AWeaponBase(const FObjectInitializer& ObjectInitializer)
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
-	
-
 	DefaultsSceneRoot = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("DefaultsSceneRoot"));
 	SetRootComponent(DefaultsSceneRoot);
 	ShootVFXPoint = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("ShootVFXPoint"));
-	ShootVFXPoint->AttachToComponent(DefaultsSceneRoot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	ShootVFXPoint->SetupAttachment(DefaultsSceneRoot);
 
 	WeaponShootTraceStart = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("WeaponShootTraceStart"));
-	WeaponShootTraceStart->AttachToComponent(DefaultsSceneRoot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	WeaponShootTraceStart->SetupAttachment(DefaultsSceneRoot);
 
 	HandIK_L = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("HandIK Left"));
-	HandIK_L->AttachToComponent(DefaultsSceneRoot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	HandIK_L->SetupAttachment(DefaultsSceneRoot);
 
 	ADSCameraPoint = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("ADS Camera Point"));
-	ADSCameraPoint->AttachToComponent(DefaultsSceneRoot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	ADSCameraPoint->SetupAttachment(DefaultsSceneRoot);
 
 }
 
@@ -99,21 +97,10 @@ void AWeaponBase::BeginPlay()
 	
 }
 
-// Called every frame
-void AWeaponBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-
 	DOREPLIFETIME(ThisClass, WeaponInstance);
-	
-
 
 }
 
@@ -121,7 +108,6 @@ bool AWeaponBase::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, 
 {
 	Channel->ReplicateSubobject(WeaponInstance, *Bunch, *RepFlags);
 	return Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
-	
 }
 
 

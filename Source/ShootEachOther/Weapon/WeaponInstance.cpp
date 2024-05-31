@@ -129,19 +129,13 @@ AWeaponBase* UWeaponInstance::InitializeForWeapon(USEOAbilitySystemComponent* as
 		weapon->AttachToComponent(avatarActor->GetMesh(),
 			FAttachmentTransformRules::SnapToTargetNotIncludingScale, DefaultsData.AttachName);
 
-		
 		GiveAbilityToASC(asc);
-		
 		
 		UE_LOG(LogTemp, Warning, TEXT("Set current weapon success"));
 
 		return weapon;
 	}
-	
-	
 	return nullptr;
-	
-
 }
 
 EWeaponType UWeaponInstance::GetWeaponType() const
@@ -155,6 +149,7 @@ void UWeaponInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	DOREPLIFETIME(ThisClass, StatTags);
 	DOREPLIFETIME(ThisClass, DefaultsData);
+	DOREPLIFETIME(ThisClass, WeaponType);
 }
 
 

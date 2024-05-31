@@ -10,7 +10,7 @@
  * 
  */
 class UDA_AIProperty;
-
+class AShootEachOtherCharacter;
 
 UCLASS()
 class SHOOTEACHOTHER_API AAIBotController : public AAIController
@@ -33,6 +33,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "AI")
 	const AActor* GetCurrentTarget() const;
 
+	UFUNCTION(BlueprintCallable, Category = "AI")
+	void ClearTarget();
+
 protected: 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PawnData")
 	TObjectPtr<const UDA_AIProperty> AIData;
@@ -50,7 +53,7 @@ protected:
 private:
 
 	TObjectPtr<class ASEO_PlayerState> SEO_PlayerState;
-	class AShootEachOtherCharacter* AI;
+	AShootEachOtherCharacter* AI;
 
-	AActor* Target;
+	AShootEachOtherCharacter* Target;
 };

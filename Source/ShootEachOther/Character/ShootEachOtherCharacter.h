@@ -56,7 +56,7 @@ public:
 	APlayerCameraManager* GetFirstPersonCameraManager() const;
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FRotator AIRotation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
